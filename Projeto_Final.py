@@ -123,6 +123,7 @@ class BarOptions():
         self.buttonUnico = QPushButton('Único')
         self.buttonFlexivel = QPushButton('Flexível')
         self.buttonPersonalInfo = QPushButton('Informações\n Pessoais')
+        self.buttonConfig = QPushButton('Configurações')
         
         self.groupBoxOptions = QGroupBox('Tipo de compromisso')
         
@@ -145,20 +146,30 @@ class MainWindow(QWidget):
         self.buttons = BarOptions()
         
         
+        layout_main_sub1 = QGridLayout()
+        layout_main_sub2 = QVBoxLayout()
         layout_main = QGridLayout()
-        layout_main.addWidget(self.buttons.main_buttonIN, 0,0,1,1)
-        layout_main.addWidget(self.buttons.main_buttonOUT, 0,0,1,1)
-        layout_main.addWidget(self.buttons.groupBoxOptions,1,0,1,1)
+        
+        layout_main_sub1.addWidget(self.buttons.main_buttonIN, 0,0,1,1)
+        layout_main_sub1.addWidget(self.buttons.main_buttonOUT, 0,0,1,1)
+        layout_main_sub1.addWidget(self.buttons.groupBoxOptions,1,0,1,1)
+        layout_main_sub1.addWidget(self.buttons.buttonPersonalInfo, 2,0,1,1)
+        layout_main_sub1.addWidget(self.buttons.buttonConfig, 3,0,1,1)
+        
         self.buttons.main_buttonOUT.hide()
         self.buttons.groupBoxOptions.hide()
-        layout_main.addWidget(self.tabs, 0,1,2,1)
+        
+        layout_main_sub2.addWidget(self.tabs)
+        layout_main.addLayout(layout_main_sub1, 0,0,1,1)
+        layout_main.addLayout(layout_main_sub2, 0,1,1,1)
+        
         self.setLayout(layout_main)
         
         
         
         self.buttons.main_buttonIN.clicked.connect(self.showOptions)
         self.buttons.main_buttonOUT.clicked.connect(self.hideOptions)
-        
+        #self.tabs.calendario.shownDays['(2015, 5, 14)']
         
         
         
