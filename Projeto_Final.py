@@ -62,6 +62,7 @@ class Calendario(QAbstractScrollArea):
             self.shownDays['{0}'.format(begin.getDate())] = Dia()
             self.shownDays['{0}'.format(begin.getDate())].tabMonthContent.resize(50,50)
             
+            
             content = QGraphicsScene()
             content.setSceneRect(QRectF(0,0, self.shownDays['{0}'.format(begin.getDate())].tabMonthContent.width(), self.shownDays['{0}'.format(begin.getDate())].tabMonthContent.height() ) )
             
@@ -89,6 +90,7 @@ class Calendario(QAbstractScrollArea):
                 layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 7,(i-35),1,3)
             begin = begin.addDays(1)
         self.main_widget.setLayout(layout_Mes)
+
 
         
 
@@ -169,7 +171,7 @@ class MainWindow(QWidget):
         
         self.buttons.main_buttonIN.clicked.connect(self.showOptions)
         self.buttons.main_buttonOUT.clicked.connect(self.hideOptions)
-        #self.tabs.calendario.shownDays['(2015, 5, 14)']
+        
         
         
         
@@ -190,6 +192,7 @@ class MainWindow(QWidget):
         self.buttons.main_buttonOUT.hide()
         self.buttons.main_buttonIN.show()
         self.buttons.groupBoxOptions.hide()
+
 
 
 
