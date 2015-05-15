@@ -10,7 +10,22 @@ class Dia():
         self.tabMonthContent = QGraphicsView()
         
     def addCompromisso(self):
-        print()
+        content = QGraphicsScene()
+        content.setSceneRect(QRectF(0,0, self.tabMonthContent.width(), self.tabMonthContent.height() ) )
+         
+        tipPolygon = QPolygonF()
+        tipPolygon.append(QPointF(10,10))
+        tipPolygon.append(QPointF(20,10))
+        tipPolygon.append(QPointF(20,20))
+        tipPolygon.append(QPointF(10,20))
+        
+        tip = QGraphicsPolygonItem(tipPolygon, None, None)
+        tip.setPos(0,0)
+        
+        
+        content.addItem(tip)
+        
+        self.tabMonthContent.setScene(content)
 
 class Semana():
     print()
@@ -87,22 +102,6 @@ class Calendario(QAbstractScrollArea):
             self.shownDays['{0}'.format(begin.getDate())].tabMonthContent.resize(50,50)
             
             
-            content = QGraphicsScene()
-            content.setSceneRect(QRectF(0,0, self.shownDays['{0}'.format(begin.getDate())].tabMonthContent.width(), self.shownDays['{0}'.format(begin.getDate())].tabMonthContent.height() ) )
-            
-            tipPolygon = QPolygonF()
-            tipPolygon.append(QPointF(10,10))
-            tipPolygon.append(QPointF(20,10))
-            tipPolygon.append(QPointF(20,20))
-            tipPolygon.append(QPointF(10,20))
-            
-            tip = QGraphicsPolygonItem(tipPolygon, None, None)
-            tip.setPos(0,0)
-            
-            
-            content.addItem(tip)
-            
-            self.shownDays['{0}'.format(begin.getDate())].tabMonthContent.setScene(content)
             
             if i <= 6:
                 layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 3,i,1,1)
@@ -201,7 +200,7 @@ class MainWindow(QWidget):
         
         self.setLayout(layout_main)
         
-        
+        self.tabs.calendario.shownDays['(2015, 5, 15)'].addCompromisso()
         
         self.buttons.main_buttonIN.clicked.connect(self.showOptions)
         self.buttons.main_buttonOUT.clicked.connect(self.hideOptions)
