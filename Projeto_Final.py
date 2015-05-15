@@ -51,11 +51,35 @@ class Calendario(QAbstractScrollArea):
         self.buttonSetMonth = QPushButton('{0}'.format(QDate.longMonthName(today.month()).upper()))
         self.buttonNextMonth = QPushButton('-->')
         self.buttonMonthBefore = QPushButton('<--')
+        
         self.showYear = QPushButton('{0}'.format(today.year()))
+        self.showSeg = QPushButton('Seg')
+        self.showTer = QPushButton('Ter')
+        self.showQua = QPushButton('Qua')
+        self.showQui = QPushButton('Qui')
+        self.showSex = QPushButton('Sex')
+        self.showSab = QPushButton('Sab')
+        self.showDom = QPushButton('Dom')
+        self.showYear.setDisabled(True)
+        self.showSeg.setDisabled(True)
+        self.showTer.setDisabled(True)
+        self.showQua.setDisabled(True)
+        self.showQui.setDisabled(True)
+        self.showSex.setDisabled(True)
+        self.showSab.setDisabled(True)
+        self.showDom.setDisabled(True)
+        
         layout_Mes.addWidget(self.buttonSetMonth, 0,0,1,7)
         layout_Mes.addWidget(self.buttonMonthBefore, 1,0,1,3)
         layout_Mes.addWidget(self.showYear, 1,3,1,1)
         layout_Mes.addWidget(self.buttonNextMonth, 1,4,1,3)
+        layout_Mes.addWidget(self.showSeg, 2,0,1,1)
+        layout_Mes.addWidget(self.showTer, 2,1,1,1)
+        layout_Mes.addWidget(self.showQua, 2,2,1,1)
+        layout_Mes.addWidget(self.showQui, 2,3,1,1)
+        layout_Mes.addWidget(self.showSex, 2,4,1,1)
+        layout_Mes.addWidget(self.showSab, 2,5,1,1)
+        layout_Mes.addWidget(self.showDom, 2,6,1,1)
         
         self.shownDays = dict()
         for i in range(42):
@@ -66,28 +90,38 @@ class Calendario(QAbstractScrollArea):
             content = QGraphicsScene()
             content.setSceneRect(QRectF(0,0, self.shownDays['{0}'.format(begin.getDate())].tabMonthContent.width(), self.shownDays['{0}'.format(begin.getDate())].tabMonthContent.height() ) )
             
+            tipPolygon = QPolygonF()
+            tipPolygon.append(QPointF(10,10))
+            tipPolygon.append(QPointF(20,10))
+            tipPolygon.append(QPointF(20,20))
+            tipPolygon.append(QPointF(10,20))
             
+            tip = QGraphicsPolygonItem(tipPolygon, None, None)
+            tip.setPos(0,0)
+            
+            
+            content.addItem(tip)
             
             self.shownDays['{0}'.format(begin.getDate())].tabMonthContent.setScene(content)
             
             if i <= 6:
-                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 2,i,1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 2,i,1,1)
+                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 3,i,1,1)
+                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 3,i,1,1)
             elif i > 6 and i <= 13:
-                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 3,(i-7),1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 3,(i-7),1,3)
+                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 4,(i-7),1,1)
+                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 4,(i-7),1,3)
             elif i > 13 and i <= 20:
-                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 4,(i-14),1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 4,(i-14),1,3)
+                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 5,(i-14),1,1)
+                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 5,(i-14),1,3)
             elif i > 20 and i <= 27:
-                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 5,(i-21),1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 5,(i-21),1,3)
+                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 6,(i-21),1,1)
+                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 6,(i-21),1,3)
             elif i > 27 and i <= 34:
-                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 6,(i-28),1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 6,(i-28),1,3)
+                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 7,(i-28),1,1)
+                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 7,(i-28),1,3)
             elif i > 34 and i <= 41:
-                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 7, (i-35),1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 7,(i-35),1,3)
+                layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 8, (i-35),1,1)
+                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 8,(i-35),1,3)
             begin = begin.addDays(1)
         self.main_widget.setLayout(layout_Mes)
 
