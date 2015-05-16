@@ -67,6 +67,7 @@ class Calendario(QAbstractScrollArea):
         self.spinYears = QSpinBox()
         self.spinYears.setRange(1500,2500)
         self.spinYears.setValue(first.year())
+        self.buttonToday = QPushButton('Hoje')
         self.buttonSet_OK = QPushButton('Ok')
         
         self.showYear = QPushButton('{0}'.format(first.year()))
@@ -88,6 +89,7 @@ class Calendario(QAbstractScrollArea):
         
         layout_Mes.addWidget(self.buttonSetMonth, 0,0,1,7)
         layout_Mes.addWidget(self.comboBoxMonths, 0,2,1,1)
+        layout_Mes.addWidget(self.buttonToday, 0,3,1,1)
         layout_Mes.addWidget(self.spinYears, 0,4,1,1)
         
         layout_Mes.addWidget(self.buttonMonthBefore, 1,0,1,3)
@@ -105,6 +107,7 @@ class Calendario(QAbstractScrollArea):
         
         self.comboBoxMonths.hide()
         self.spinYears.hide()
+        self.buttonToday.hide()
         self.buttonSet_OK.hide()
         
         self.shownDays = dict()
@@ -136,7 +139,6 @@ class Calendario(QAbstractScrollArea):
                 layout_Mes.addWidget(self.shownLabels['{0}'.format(i)], 8,(i-36),1,3)
             begin = begin.addDays(1)
         self.main_widget.setLayout(layout_Mes)
-        print(self.shownDays)
     
     def setDefault(self):
         self.main_widget = QWidget()
@@ -270,6 +272,7 @@ class MainWindow(QWidget):
         self.tabs.calendario.buttonMonthBefore.clicked.connect(self.monthBefore)
         self.tabs.calendario.buttonSetMonth.clicked.connect(self.setMonth)
         self.tabs.calendario.buttonSet_OK.clicked.connect(self.setMonthOK)
+        self.tabs.calendario.buttonToday.clicked.connect(self.setToday)
         
         
         
@@ -295,6 +298,7 @@ class MainWindow(QWidget):
     def hideOptions(self):
         self.buttons.main_buttonOUT.hide()
         self.buttons.main_buttonIN.show()
+        self.buttons.separator1.show()
         self.buttons.Title.hide()
         self.buttons.groupBoxOptions.hide()
         self.buttons.groupBoxUnico.hide()
@@ -346,31 +350,62 @@ class MainWindow(QWidget):
         self.tabs.calendario.showYear.hide()
         self.tabs.calendario.comboBoxMonths.show()
         self.tabs.calendario.spinYears.show()
+        self.tabs.calendario.buttonToday.show()
         self.tabs.calendario.buttonSet_OK.show()
     
     def setMonthOK(self):
         year = self.tabs.calendario.spinYears.value()
         month = self.tabs.calendario.comboBoxMonths.currentIndex()+1
-        nextFirst = QDate( year, month, 1 )
+        setFirst = QDate( year, month, 1 )
+        
+        today = QDate.currentDate()
+        
+        self.mes = ( setFirst.month()-today.month() ) + ( (setFirst.year()-today.year())*12 )
+        
         
         self.tabs.calendario.comboBoxMonths.hide()
         self.tabs.calendario.spinYears.hide()
+        self.tabs.calendario.buttonToday.hide()
         self.tabs.calendario.buttonSet_OK.hide()
         self.tabs.calendario.buttonSetMonth.show()
         self.tabs.calendario.showYear.show()
         
-        if nextFirst.dayOfWeek() <= 6:
-            nextBegin = nextFirst.addDays( -nextFirst.dayOfWeek() )
+        if setFirst.dayOfWeek() <= 6:
+            setBegin = setFirst.addDays( -setFirst.dayOfWeek() )
         else:
-            nextBegin = nextFirst.addDays(-7)
+            setBegin = setFirst.addDays(-7)
             
         for i in range(1,43):
-            self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(nextBegin.day() ) + '\n'*3 )
-            nextBegin = nextBegin.addDays(1)
+            self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(setBegin.day() ) + '\n'*3 )
+            setBegin = setBegin.addDays(1)
         
-        self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(nextFirst.month()).upper()))
-        self.tabs.calendario.showYear.setText('{0}'.format(nextFirst.year()))
-
+        self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(setFirst.month()).upper()))
+        self.tabs.calendario.showYear.setText('{0}'.format(setFirst.year()))
+    
+    def setToday(self):
+        self.mes = 0
+        
+        self.tabs.calendario.comboBoxMonths.hide()
+        self.tabs.calendario.spinYears.hide()
+        self.tabs.calendario.buttonToday.hide()
+        self.tabs.calendario.buttonSet_OK.hide()
+        self.tabs.calendario.buttonSetMonth.show()
+        self.tabs.calendario.showYear.show()
+        
+        today = QDate.currentDate()
+        first = today.addDays( -(today.day()-1) )
+        
+        if first.dayOfWeek() <= 6:
+            begin = first.addDays( -first.dayOfWeek() )
+        else:
+            begin = first.addDays(-7)
+            
+        for i in range(1,43):
+            self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(begin.day() ) + '\n'*3 )
+            begin = begin.addDays(1)
+        
+        self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(first.month()).upper()))
+        self.tabs.calendario.showYear.setText('{0}'.format(first.year()))
 
 
 
