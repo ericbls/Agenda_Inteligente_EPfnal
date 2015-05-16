@@ -117,6 +117,9 @@ class Calendario(QAbstractScrollArea):
             self.shownDays['{0}'.format(i)].tabMonthContent.resize(50,50)
             self.shownLabels['{0}'.format(i)] = QLabel(' {0}'.format(begin.day() ) + '\n'*3 )
             
+            if begin.month() != today.month():
+                self.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
+            
             
             
             if i <= 7:
