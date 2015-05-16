@@ -21,7 +21,6 @@ class Dia():
         
         tip = QGraphicsPolygonItem(tipPolygon, None, None)
         tip.setPos(0,0)
-        tip.fillRule('r')
         
         
         content.addItem(tip)
