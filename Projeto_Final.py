@@ -1,7 +1,7 @@
 import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-
+import sip
 
 class Dia():
     def __init__(self):
@@ -33,24 +33,8 @@ class Semana():
 class Calendario(QAbstractScrollArea):
     def __init__(self):
         super(Calendario, self).__init__()
-        
-        
-        self.main_widget = QWidget()
-        
-        layout_ScrollArea = QVBoxLayout(self)
-        layout_ScrollArea.addWidget(self.main_widget)
-        self.setLayout(layout_ScrollArea)
-        
-        stylesheet = \
-            ".QWidget {\n" \
-            + "border: 0px solid black;\n" \
-            + "border-radius: 5px;\n" \
-            + "background-color: rgb(200, 200, 200);\n" \
-            + "}"
-        self.main_widget.setStyleSheet(stylesheet)
-        
+        self.setDefault()
         self.createLayoutMes()
-        
         
     def createLayoutMes(self):
         layout_Mes = QGridLayout(self)
@@ -63,11 +47,11 @@ class Calendario(QAbstractScrollArea):
             begin = first
         
         
-        self.buttonSetMonth = QPushButton('{0}'.format(QDate.longMonthName(today.month()).upper()))
+        self.buttonSetMonth = QPushButton('{0}'.format(QDate.longMonthName(first.month()).upper()))
         self.buttonNextMonth = QPushButton('-->')
         self.buttonMonthBefore = QPushButton('<--')
         
-        self.showYear = QPushButton('{0}'.format(today.year()))
+        self.showYear = QPushButton('{0}'.format(first.year()))
         self.showSeg = QPushButton('Seg')
         self.showTer = QPushButton('Ter')
         self.showQua = QPushButton('Qua')
@@ -97,33 +81,49 @@ class Calendario(QAbstractScrollArea):
         layout_Mes.addWidget(self.showDom, 2,6,1,1)
         
         self.shownDays = dict()
+        self.shownLabels = dict()
         for i in range(42):
             self.shownDays['{0}'.format(begin.getDate())] = Dia()
             self.shownDays['{0}'.format(begin.getDate())].tabMonthContent.resize(50,50)
+            self.shownLabels['{0}'.format(begin.getDate())] = QLabel(' {0}'.format(begin.day() ) + '\n'*3 )
             
             
             
             if i <= 6:
                 layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 3,i,1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 3,i,1,1)
+                layout_Mes.addWidget(self.shownLabels['{0}'.format(begin.getDate())], 3,i,1,1)
             elif i > 6 and i <= 13:
                 layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 4,(i-7),1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 4,(i-7),1,3)
+                layout_Mes.addWidget(self.shownLabels['{0}'.format(begin.getDate())], 4,(i-7),1,3)
             elif i > 13 and i <= 20:
                 layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 5,(i-14),1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 5,(i-14),1,3)
+                layout_Mes.addWidget(self.shownLabels['{0}'.format(begin.getDate())], 5,(i-14),1,3)
             elif i > 20 and i <= 27:
                 layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 6,(i-21),1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 6,(i-21),1,3)
+                layout_Mes.addWidget(self.shownLabels['{0}'.format(begin.getDate())], 6,(i-21),1,3)
             elif i > 27 and i <= 34:
                 layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 7,(i-28),1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 7,(i-28),1,3)
+                layout_Mes.addWidget(self.shownLabels['{0}'.format(begin.getDate())], 7,(i-28),1,3)
             elif i > 34 and i <= 41:
                 layout_Mes.addWidget(self.shownDays['{0}'.format(begin.getDate())].tabMonthContent, 8, (i-35),1,1)
-                layout_Mes.addWidget(QLabel(' {0}'.format(begin.day() ) + '\n'*3 ), 8,(i-35),1,3)
+                layout_Mes.addWidget(self.shownLabels['{0}'.format(begin.getDate())], 8,(i-35),1,3)
             begin = begin.addDays(1)
         self.main_widget.setLayout(layout_Mes)
-
+    
+    def setDefault(self):
+        self.main_widget = QWidget()
+        
+        self.layout_ScrollArea = QVBoxLayout(self)
+        self.layout_ScrollArea.addWidget(self.main_widget)
+        self.setLayout(self.layout_ScrollArea)
+        
+        stylesheet = \
+            ".QWidget {\n" \
+            + "border: 0px solid black;\n" \
+            + "border-radius: 5px;\n" \
+            + "background-color: rgb(200, 200, 200);\n" \
+            + "}"
+        self.main_widget.setStyleSheet(stylesheet)
 
         
 
@@ -156,19 +156,37 @@ class BarOptions():
         self.buttonSemanal = QPushButton('Semanal')
         self.buttonMensal = QPushButton('Mensal')
         self.buttonUnico = QPushButton('Único')
+        self.buttonUnico_OUT = QPushButton('Voltar')
+        self.buttonUnico_OK = QPushButton('Ok')
         self.buttonFlexivel = QPushButton('Flexível')
         self.buttonPersonalInfo = QPushButton('Informações\n Pessoais')
         self.buttonConfig = QPushButton('Configurações')
         
-        self.groupBoxOptions = QGroupBox('Tipo de compromisso')
         
-        layout_groupBox = QVBoxLayout()
-        layout_groupBox.addWidget(self.buttonUnico)
-        layout_groupBox.addWidget(self.buttonDiario)
-        layout_groupBox.addWidget(self.buttonSemanal)
-        layout_groupBox.addWidget(self.buttonMensal)
-        layout_groupBox.addWidget(self.buttonFlexivel)
-        self.groupBoxOptions.setLayout(layout_groupBox)
+        self.Title = QLineEdit()
+        self.Title.setPlaceholderText('Título')
+        
+        
+        self.groupBoxOptions = QGroupBox('Tipo de compromisso')
+        self.groupBoxUnico = QGroupBox('Único')
+        
+        layout_groupBoxOptions = QVBoxLayout()
+        layout_groupBoxOptions.addWidget(self.buttonUnico)
+        layout_groupBoxOptions.addWidget(self.buttonDiario)
+        layout_groupBoxOptions.addWidget(self.buttonSemanal)
+        layout_groupBoxOptions.addWidget(self.buttonMensal)
+        layout_groupBoxOptions.addWidget(self.buttonFlexivel)
+        self.groupBoxOptions.setLayout(layout_groupBoxOptions)
+        
+        
+        
+        layout_groupBoxUnico = QGridLayout()
+        layout_groupBoxUnico.addWidget(QWidget(), 0,0,1,2)
+        layout_groupBoxUnico.addWidget(self.buttonUnico_OUT, 1,0,1,1)
+        layout_groupBoxUnico.addWidget(self.buttonUnico_OK, 1,1,1,1)
+        self.groupBoxUnico.setLayout(layout_groupBoxUnico)
+        
+        
         
         
 
@@ -179,6 +197,7 @@ class MainWindow(QWidget):
         
         self.tabs = Tabs()
         self.buttons = BarOptions()
+        self.mes = 0
         
         
         layout_main_sub1 = QGridLayout()
@@ -187,12 +206,18 @@ class MainWindow(QWidget):
         
         layout_main_sub1.addWidget(self.buttons.main_buttonIN, 0,0,1,1)
         layout_main_sub1.addWidget(self.buttons.main_buttonOUT, 0,0,1,1)
-        layout_main_sub1.addWidget(self.buttons.groupBoxOptions,1,0,1,1)
-        layout_main_sub1.addWidget(self.buttons.buttonPersonalInfo, 2,0,1,1)
-        layout_main_sub1.addWidget(self.buttons.buttonConfig, 3,0,1,1)
+        layout_main_sub1.addWidget(self.buttons.Title, 1,0,1,1)
+        layout_main_sub1.addWidget(QWidget(), 1,0,1,1)
+        layout_main_sub1.addWidget(self.buttons.groupBoxOptions,2,0,1,1)
+        layout_main_sub1.addWidget(self.buttons.groupBoxUnico, 2,0,1,1)
+        layout_main_sub1.addWidget(self.buttons.buttonPersonalInfo, 3,0,1,1)
+        layout_main_sub1.addWidget(self.buttons.buttonConfig, 4,0,1,1)
+        
         
         self.buttons.main_buttonOUT.hide()
+        self.buttons.Title.hide()
         self.buttons.groupBoxOptions.hide()
+        self.buttons.groupBoxUnico.hide()
         
         layout_main_sub2.addWidget(self.tabs)
         layout_main.addLayout(layout_main_sub1, 0,0,1,1)
@@ -200,11 +225,14 @@ class MainWindow(QWidget):
         
         self.setLayout(layout_main)
         
-        self.tabs.calendario.shownDays['(2015, 5, 15)'].addCompromisso()
+        
         
         self.buttons.main_buttonIN.clicked.connect(self.showOptions)
         self.buttons.main_buttonOUT.clicked.connect(self.hideOptions)
-        
+        self.buttons.buttonUnico.clicked.connect(self.showUnico)
+        self.buttons.buttonUnico_OUT.clicked.connect(self.hideOption)
+        self.tabs.calendario.buttonNextMonth.clicked.connect(self.nextMonth)
+        self.tabs.calendario.buttonMonthBefore.clicked.connect(self.monthBefore)
         
         
         
@@ -219,12 +247,75 @@ class MainWindow(QWidget):
     def showOptions(self):
         self.buttons.main_buttonIN.hide()
         self.buttons.main_buttonOUT.show()
+        self.buttons.Title.show()
         self.buttons.groupBoxOptions.show()
+    
+    def showUnico(self):
+        self.buttons.groupBoxOptions.hide()
+        self.buttons.groupBoxUnico.show()
     
     def hideOptions(self):
         self.buttons.main_buttonOUT.hide()
         self.buttons.main_buttonIN.show()
+        self.buttons.Title.hide()
         self.buttons.groupBoxOptions.hide()
+        self.buttons.groupBoxUnico.hide()
+    
+    def hideOption(self):
+        self.buttons.groupBoxUnico.hide()
+        self.buttons.groupBoxOptions.show()
+    
+    def nextMonth(self):
+        self.mes += 1
+        
+        today = QDate.currentDate()
+        first = today.addDays( -(today.day()-1) )
+        nextFirst = first.addMonths(self.mes)
+        
+        if first.dayOfWeek() <= 6:
+            begin = first.addDays( -first.dayOfWeek() )
+        if first.dayOfWeek() > 6:
+            begin = first
+        if nextFirst.dayOfWeek() <= 6:
+            nextBegin = nextFirst.addDays( -nextFirst.dayOfWeek() )
+        if nextFirst.dayOfWeek() > 6:
+            nextBegin = nextFirst
+            
+        for i in range(42):
+            self.tabs.calendario.shownLabels['{0}'.format(begin.getDate())].setText(' {0}'.format(nextBegin.day() ) + '\n'*3 )
+            begin = begin.addDays(1)
+            nextBegin = nextBegin.addDays(1)
+        
+        self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(nextFirst.month()).upper()))
+        self.tabs.calendario.showYear.setText('{0}'.format(nextFirst.year()))
+    
+    def monthBefore(self):
+        self.mes -= 1
+        
+        today = QDate.currentDate()
+        first = today.addDays( -(today.day()-1) )
+        firstBefore = first.addMonths(self.mes)
+        
+        if first.dayOfWeek() <= 6:
+            begin = first.addDays( -first.dayOfWeek() )
+        if first.dayOfWeek() > 6:
+            begin = first
+        if firstBefore.dayOfWeek() <= 6:
+            beginBefore = firstBefore.addDays( -firstBefore.dayOfWeek() )
+        if firstBefore.dayOfWeek() > 6:
+            beginBefore = firstBefore
+            
+        for i in range(42):
+            self.tabs.calendario.shownLabels['{0}'.format(begin.getDate())].setText(' {0}'.format(beginBefore.day() ) + '\n'*3 )
+            begin = begin.addDays(1)
+            beginBefore = beginBefore.addDays(1)
+        
+        self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(firstBefore.month()).upper()))
+        self.tabs.calendario.showYear.setText('{0}'.format(firstBefore.year()))
+        
+        
+        
+        
 
 
 
