@@ -1,7 +1,7 @@
 import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sip
+
 
 class Dia():
     def __init__(self):
