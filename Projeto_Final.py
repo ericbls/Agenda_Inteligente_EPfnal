@@ -44,7 +44,7 @@ class Calendario(QAbstractScrollArea):
         if first.dayOfWeek() <= 6:
             begin = first.addDays( -first.dayOfWeek() )
         else:
-            begin = first
+            begin = first.addDays(-7)
         
         
         self.buttonSetMonth = QPushButton('{0}'.format(QDate.longMonthName(first.month()).upper()))
@@ -161,6 +161,7 @@ class BarOptions():
         self.buttonFlexivel = QPushButton('Flexível')
         self.buttonPersonalInfo = QPushButton('Informações\n Pessoais')
         self.buttonConfig = QPushButton('Configurações')
+        self.separator1 = QWidget()
         
         
         self.Title = QLineEdit()
@@ -207,7 +208,7 @@ class MainWindow(QWidget):
         layout_main_sub1.addWidget(self.buttons.main_buttonIN, 0,0,1,1)
         layout_main_sub1.addWidget(self.buttons.main_buttonOUT, 0,0,1,1)
         layout_main_sub1.addWidget(self.buttons.Title, 1,0,1,1)
-        layout_main_sub1.addWidget(QWidget(), 1,0,1,1)
+        layout_main_sub1.addWidget(self.buttons.separator1, 1,0,1,1)
         layout_main_sub1.addWidget(self.buttons.groupBoxOptions,2,0,1,1)
         layout_main_sub1.addWidget(self.buttons.groupBoxUnico, 2,0,1,1)
         layout_main_sub1.addWidget(self.buttons.buttonPersonalInfo, 3,0,1,1)
@@ -246,6 +247,7 @@ class MainWindow(QWidget):
     
     def showOptions(self):
         self.buttons.main_buttonIN.hide()
+        self.buttons.separator1.hide()
         self.buttons.main_buttonOUT.show()
         self.buttons.Title.show()
         self.buttons.groupBoxOptions.show()
@@ -275,11 +277,11 @@ class MainWindow(QWidget):
         if first.dayOfWeek() <= 6:
             begin = first.addDays( -first.dayOfWeek() )
         if first.dayOfWeek() > 6:
-            begin = first
+            begin = first.addDays(-7)
         if nextFirst.dayOfWeek() <= 6:
             nextBegin = nextFirst.addDays( -nextFirst.dayOfWeek() )
         if nextFirst.dayOfWeek() > 6:
-            nextBegin = nextFirst
+            nextBegin = nextFirst.addDays(-7)
             
         for i in range(42):
             self.tabs.calendario.shownLabels['{0}'.format(begin.getDate())].setText(' {0}'.format(nextBegin.day() ) + '\n'*3 )
@@ -299,11 +301,11 @@ class MainWindow(QWidget):
         if first.dayOfWeek() <= 6:
             begin = first.addDays( -first.dayOfWeek() )
         if first.dayOfWeek() > 6:
-            begin = first
+            begin = first.addDays(-7)
         if firstBefore.dayOfWeek() <= 6:
             beginBefore = firstBefore.addDays( -firstBefore.dayOfWeek() )
         if firstBefore.dayOfWeek() > 6:
-            beginBefore = firstBefore
+            beginBefore = firstBefore.addDays(-7)
             
         for i in range(42):
             self.tabs.calendario.shownLabels['{0}'.format(begin.getDate())].setText(' {0}'.format(beginBefore.day() ) + '\n'*3 )
