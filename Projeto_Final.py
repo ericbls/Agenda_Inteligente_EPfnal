@@ -119,6 +119,8 @@ class Calendario(QAbstractScrollArea):
             
             if begin.month() != today.month():
                 self.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
+            else:
+                self.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
             
             
             
@@ -153,7 +155,7 @@ class Calendario(QAbstractScrollArea):
         stylesheet = \
             ".QWidget {\n" \
             + "border: 0px solid black;\n" \
-            + "border-radius: 5px;\n" \
+            + "border-radius: 10px;\n" \
             + "background-color: rgb(200, 200, 200);\n" \
             + "}"
         self.main_widget.setStyleSheet(stylesheet)
@@ -203,7 +205,7 @@ class BarOptions():
         
         
         self.Title = QLineEdit()
-        self.Title.setPlaceholderText('Título')
+        self.Title.setPlaceholderText('Título do compromisso')
         
         
         self.groupBoxOptions = QGroupBox('Tipo de compromisso')
@@ -243,6 +245,8 @@ class MainWindow(QWidget):
         layout_main_sub2 = QVBoxLayout()
         layout_main = QGridLayout()
         
+        
+        
         layout_main_sub1.addWidget(self.buttons.main_buttonIN, 0,0,1,1)
         layout_main_sub1.addWidget(self.buttons.main_buttonOUT, 0,0,1,1)
         layout_main_sub1.addWidget(self.buttons.Title, 1,0,1,1)
@@ -252,11 +256,12 @@ class MainWindow(QWidget):
         layout_main_sub1.addWidget(self.buttons.buttonPersonalInfo, 3,0,1,1)
         layout_main_sub1.addWidget(self.buttons.buttonConfig, 4,0,1,1)
         
-        
         self.buttons.main_buttonOUT.hide()
         self.buttons.Title.hide()
         self.buttons.groupBoxOptions.hide()
         self.buttons.groupBoxUnico.hide()
+        
+        
         
         layout_main_sub2.addWidget(self.tabs)
         layout_main.addLayout(layout_main_sub1, 0,0,1,1)
@@ -316,14 +321,22 @@ class MainWindow(QWidget):
         today = QDate.currentDate()
         first = today.addDays( -(today.day()-1) )
         nextFirst = first.addMonths(self.mes)
+        self.tabs.calendario.spinYears.setValue(nextFirst.year())
         
         if nextFirst.dayOfWeek() <= 6:
             nextBegin = nextFirst.addDays( -nextFirst.dayOfWeek() )
         else:
             nextBegin = nextFirst.addDays(-7)
-            
+        
+        
         for i in range(1,43):
             self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(nextBegin.day() ) + '\n'*3 )
+            
+            if nextBegin.month() != nextFirst.month():
+                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
+            else:
+                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
+            
             nextBegin = nextBegin.addDays(1)
         
         self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(nextFirst.month()).upper()))
@@ -335,6 +348,7 @@ class MainWindow(QWidget):
         today = QDate.currentDate()
         first = today.addDays( -(today.day()-1) )
         firstBefore = first.addMonths(self.mes)
+        self.tabs.calendario.spinYears.setValue(firstBefore.year())
         
         if firstBefore.dayOfWeek() <= 6:
             beginBefore = firstBefore.addDays( -firstBefore.dayOfWeek() )
@@ -343,6 +357,12 @@ class MainWindow(QWidget):
             
         for i in range(1,43):
             self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(beginBefore.day() ) + '\n'*3 )
+            
+            if beginBefore.month() != firstBefore.month():
+                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
+            else:
+                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
+            
             beginBefore = beginBefore.addDays(1)
         
         self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(firstBefore.month()).upper()))
@@ -380,6 +400,12 @@ class MainWindow(QWidget):
             
         for i in range(1,43):
             self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(setBegin.day() ) + '\n'*3 )
+            
+            if setBegin.month() != setFirst.month():
+                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
+            else:
+                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
+            
             setBegin = setBegin.addDays(1)
         
         self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(setFirst.month()).upper()))
@@ -387,6 +413,8 @@ class MainWindow(QWidget):
     
     def setToday(self):
         self.mes = 0
+        today = QDate.currentDate()
+        self.tabs.calendario.spinYears.setValue(today.year())
         
         self.tabs.calendario.comboBoxMonths.hide()
         self.tabs.calendario.spinYears.hide()
@@ -405,6 +433,12 @@ class MainWindow(QWidget):
             
         for i in range(1,43):
             self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(begin.day() ) + '\n'*3 )
+            
+            if begin.month() != first.month():
+                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
+            else:
+                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
+            
             begin = begin.addDays(1)
         
         self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(first.month()).upper()))
