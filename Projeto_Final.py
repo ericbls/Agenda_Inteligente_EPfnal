@@ -5,14 +5,16 @@ from PyQt4.QtCore import *
 
 class Dia():
     def __init__(self):
-        self.tabDayContent = QGraphicsView()
-        self.tabWeekContent = QListView()
-        self.tabMonthContent = QGraphicsView()
+        self.tabDayContent = QGraphicsView() #cria retângulo do dia na aba do mês
+        self.tabWeekContent = QListView() #cria retângulo do dia na aba da semana
+        self.tabMonthContent = QGraphicsView() #cria retângulo do dia na aba do dia
         
     def addCompromisso(self):
+        # cria uma tela para desenhar coisas no retângulo do dia na aba do mês
         content = QGraphicsScene()
         content.setSceneRect(QRectF(0,0, self.tabMonthContent.width(), self.tabMonthContent.height() ) )
-         
+        
+        # cria um quadrado
         tipPolygon = QPolygonF()
         tipPolygon.append(QPointF(10,10))
         tipPolygon.append(QPointF(20,10))
@@ -22,35 +24,39 @@ class Dia():
         tip = QGraphicsPolygonItem(tipPolygon, None, None)
         tip.setPos(0,0)
         
-        
+        # adiciona o quadrado à tela
         content.addItem(tip)
         
+        # adiciona a tela ao retângulo do dia na aba do mês
         self.tabMonthContent.setScene(content)
 
 class Semana():
-    print()
+    print() # por enquanto não faz nada
 
 class Calendario(QAbstractScrollArea):
     def __init__(self):
-        super(Calendario, self).__init__()
-        self.setDefault()
-        self.createLayoutMes()
+        super(Calendario, self).__init__() # cria uma area principal que irá conter todos os elementos do calendário
+        self.setDefault() # cria uma area menor com fundo cinza
+        self.createLayoutMes() # cria os botões do calendário e adiciona os retângulos dos dias
         
     def createLayoutMes(self):
-        layout_Mes = QGridLayout(self)
+        layout_Mes = QGridLayout(self) # cria um layout de grade para a area com fundo cinza
         
-        today = QDate.currentDate()
-        first = today.addDays( -(today.day()-1) )
+        today = QDate.currentDate() # cria um objeto da classe QDate com a data do dia atual
+        first = today.addDays( -(today.day()-1) ) # calcula o primeiro dia do mês atual
+        
+        # calcula quantos dias do mês anterior irão aparecer no calendário
         if first.dayOfWeek() <= 6:
             begin = first.addDays( -first.dayOfWeek() )
         else:
             begin = first.addDays(-7)
         
         
-        self.buttonSetMonth = QPushButton('{0}'.format(QDate.longMonthName(first.month()).upper()))
-        self.buttonNextMonth = QPushButton('-->')
-        self.buttonMonthBefore = QPushButton('<--')
+        self.buttonSetMonth = QPushButton('{0}'.format(QDate.longMonthName(first.month()).upper())) # cria botão que, quando clicado, abre um interface para plotar manualmente o mês e o ano desejados
+        self.buttonNextMonth = QPushButton('-->') # cria botão que plota no calendário o mês seguinte
+        self.buttonMonthBefore = QPushButton('<--') # cria botão que plota no calendário o mês anterior
         
+        # cria um combo box com as opções de mês para plotar manualmente
         self.comboBoxMonths = QComboBox()
         self.comboBoxMonths.addItems(['JANEIRO',
                                      'FEVEREIRO',
@@ -64,13 +70,18 @@ class Calendario(QAbstractScrollArea):
                                      'OUTUBRO',
                                      'NOVEMBRO',
                                      'DEZEMBRO'])
-        self.spinYears = QSpinBox()
-        self.spinYears.setRange(1500,2500)
-        self.spinYears.setValue(first.year())
-        self.buttonToday = QPushButton('Hoje')
-        self.buttonSet_OK = QPushButton('Ok')
         
-        self.showYear = QPushButton('{0}'.format(first.year()))
+        # cria um spin box para plotar o ano manualmente
+        self.spinYears = QSpinBox()
+        self.spinYears.setRange(1500,2500) # define o mínimo e o máximo para o spin box
+        self.spinYears.setValue(first.year()) # define um valor inicial para o spin box quando chamado
+        
+        self.buttonToday = QPushButton('Hoje') # cria botão que, quando clicado, plota no calendário o mês atual
+        self.buttonSet_OK = QPushButton('Ok') # cria botão que, quando clicado, plota as configurações definidas no combo box e no spin box
+        
+        self.showYear = QPushButton('{0}'.format(first.year())) # cria botão para mostrar o ano exibido
+        
+        # cria botões para exibir os dias da semana
         self.showSeg = QPushButton('Seg')
         self.showTer = QPushButton('Ter')
         self.showQua = QPushButton('Qua')
@@ -78,6 +89,8 @@ class Calendario(QAbstractScrollArea):
         self.showSex = QPushButton('Sex')
         self.showSab = QPushButton('Sab')
         self.showDom = QPushButton('Dom')
+        
+        # torna os botões no clicáveis
         self.showYear.setDisabled(True)
         self.showSeg.setDisabled(True)
         self.showTer.setDisabled(True)
@@ -87,6 +100,8 @@ class Calendario(QAbstractScrollArea):
         self.showSab.setDisabled(True)
         self.showDom.setDisabled(True)
         
+        # define as posições relativas de cada elemento no layout da area com fundo cinza
+        # (posição de cada elemento em relação aos outros no layout)
         layout_Mes.addWidget(self.buttonSetMonth, 0,0,1,7)
         layout_Mes.addWidget(self.comboBoxMonths, 0,2,1,1)
         layout_Mes.addWidget(self.buttonToday, 0,3,1,1)
@@ -97,33 +112,36 @@ class Calendario(QAbstractScrollArea):
         layout_Mes.addWidget(self.showYear, 1,3,1,1)
         layout_Mes.addWidget(self.buttonNextMonth, 1,4,1,3)
         
-        layout_Mes.addWidget(self.showSeg, 2,0,1,1)
-        layout_Mes.addWidget(self.showTer, 2,1,1,1)
-        layout_Mes.addWidget(self.showQua, 2,2,1,1)
-        layout_Mes.addWidget(self.showQui, 2,3,1,1)
-        layout_Mes.addWidget(self.showSex, 2,4,1,1)
-        layout_Mes.addWidget(self.showSab, 2,5,1,1)
-        layout_Mes.addWidget(self.showDom, 2,6,1,1)
+        layout_Mes.addWidget(self.showDom, 2,0,1,1)
+        layout_Mes.addWidget(self.showSeg, 2,1,1,1)
+        layout_Mes.addWidget(self.showTer, 2,2,1,1)
+        layout_Mes.addWidget(self.showQua, 2,3,1,1)
+        layout_Mes.addWidget(self.showQui, 2,4,1,1)
+        layout_Mes.addWidget(self.showSex, 2,5,1,1)
+        layout_Mes.addWidget(self.showSab, 2,6,1,1)
         
+        # esconde elementos do layout que serão posteriormente chamados
         self.comboBoxMonths.hide()
         self.spinYears.hide()
         self.buttonToday.hide()
         self.buttonSet_OK.hide()
         
-        self.shownDays = dict()
-        self.shownLabels = dict()
+        self.shownDays = dict() # cria dicionário para guardar as posições dos retângulos dos dias
+        self.shownLabels = dict() # cria dicionário para guardar as posições das labels como os números dos dias
+        
         for i in range(1,43):
-            self.shownDays['{0}'.format(i)] = Dia()
-            self.shownDays['{0}'.format(i)].tabMonthContent.resize(50,50)
-            self.shownLabels['{0}'.format(i)] = QLabel(' {0}'.format(begin.day() ) + '\n'*3 )
+            self.shownDays['{0}'.format(i)] = Dia() # cria um item cuja chave é o número do termo na grade e o valor é um objeto da classe Dia
+            self.shownDays['{0}'.format(i)].tabMonthContent.resize(50,50) # redimensiona o retângulo do dia na aba do mês 
+            self.shownLabels['{0}'.format(i)] = QLabel(' {0}'.format(begin.day() ) + '\n'*3 ) # cria um item cuja chave é o número do termo na grade e o valor é uma label com o número do dia
             
+            # determina as cores dos números dos dias no calendário
             if begin.month() != today.month():
-                self.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
+                self.shownLabels['{0}'.format(i)].setStyleSheet('color: gray') # dias que não pertençam ao mês exibido ficam com o número cinza
             else:
                 self.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
             
             
-            
+            # plota os retângulos dos dias e os números dos dias nas suas posições relativas no layout da area de fundo cinza
             if i <= 7:
                 layout_Mes.addWidget(self.shownDays['{0}'.format(i)].tabMonthContent, 3,i-1,1,1)
                 layout_Mes.addWidget(self.shownLabels['{0}'.format(i)], 3,i-1,1,1)
@@ -146,12 +164,13 @@ class Calendario(QAbstractScrollArea):
         self.main_widget.setLayout(layout_Mes)
     
     def setDefault(self):
-        self.main_widget = QWidget()
+        self.main_widget = QWidget() # cria a area menor
         
-        self.layout_ScrollArea = QVBoxLayout(self)
-        self.layout_ScrollArea.addWidget(self.main_widget)
-        self.setLayout(self.layout_ScrollArea)
+        self.layout_ScrollArea = QVBoxLayout(self) # cria layout para a area principal
+        self.layout_ScrollArea.addWidget(self.main_widget) # adiciona a area menor ao layout da area principal
+        self.setLayout(self.layout_ScrollArea) # adiciona o layout à area principal
         
+        # define a cor do fundo da area menor como cinza
         stylesheet = \
             ".QWidget {\n" \
             + "border: 0px solid black;\n" \
@@ -164,27 +183,28 @@ class Calendario(QAbstractScrollArea):
 
 class Tabs(QTabWidget):
     def __init__(self):
-        super(Tabs, self).__init__()
-        self.setFixedSize(720,540)
+        super(Tabs, self).__init__() # cria area principal, capaz de receber abas
+        self.setFixedSize(720,540) # define dimensões fixas para a area principal
         
+        # cria tres abas 
         self.tab1 = QWidget(self)
         self.tab2 = QWidget(self)
         self.tab3 = QWidget(self)
         
-        
-        self.calendario = Calendario()
-        layout_tab1 = QVBoxLayout()
-        layout_tab1.addWidget(self.calendario)
-        self.tab1.setLayout(layout_tab1)
-        
+        self.calendario = Calendario() # cria um objeto da classe Calendario
+        layout_tab1 = QVBoxLayout() # cria layout para a aba tab1
+        layout_tab1.addWidget(self.calendario) # adiciona o calendário ao layout da aba tab1
+        self.tab1.setLayout(layout_tab1) # adiciona o layout à tab1
         
         
+        # adiciona as três abas à area principal
         self.addTab(self.tab1, 'Mês')
         self.addTab(self.tab2, 'Semana')
         self.addTab(self.tab3, 'Dia')
 
 class BarOptions():
     def __init__(self):
+        # cria os botões da barra de opções
         self.main_buttonIN = QPushButton('Adicionar Compromisso')
         self.main_buttonOUT = QPushButton('Cancelar')
         self.buttonPersonalInfo = QPushButton('Informações\n Pessoais')
@@ -198,34 +218,32 @@ class BarOptions():
         self.buttonMensal = QPushButton('Mensal')
         
         self.buttonUnico = QPushButton('Único')
-        self.buttonUnico_OUT = QPushButton('Voltar')
-        self.buttonUnico_OK = QPushButton('Ok')
         
         self.buttonFlexivel = QPushButton('Flexível')
         
+        self.buttonOption_OUT = QPushButton('Voltar')
+        self.buttonOption_OK = QPushButton('Ok')
         
+        # cria barra para escrever o título do compromisso
         self.Title = QLineEdit()
         self.Title.setPlaceholderText('Título do compromisso')
         
+        self.groupBoxOptions = QGroupBox('Tipo de compromisso') # cria uma area contornada para agrupar as opções de tipo de compromisso
+        self.groupBoxUnico = QGroupBox('Único') # cria uma area contornada para agrupar os elementos da opção compromisso único
         
-        self.groupBoxOptions = QGroupBox('Tipo de compromisso')
-        self.groupBoxUnico = QGroupBox('Único')
-        
+        # cria layout para groupBoxOptions e adiciona todas as opções de tipo de compromisso
         layout_groupBoxOptions = QVBoxLayout()
         layout_groupBoxOptions.addWidget(self.buttonUnico)
         layout_groupBoxOptions.addWidget(self.buttonDiario)
         layout_groupBoxOptions.addWidget(self.buttonSemanal)
         layout_groupBoxOptions.addWidget(self.buttonMensal)
         layout_groupBoxOptions.addWidget(self.buttonFlexivel)
-        self.groupBoxOptions.setLayout(layout_groupBoxOptions)
+        self.groupBoxOptions.setLayout(layout_groupBoxOptions) # adiciona o layout a groupBoxOptions
         
         
-        
+        # cria layout para groupBoxUnico e adiciona todos os elementos da opção compromisso único
         layout_groupBoxUnico = QGridLayout()
-        layout_groupBoxUnico.addWidget(QWidget(), 0,0,1,2)
-        layout_groupBoxUnico.addWidget(self.buttonUnico_OUT, 1,0,1,1)
-        layout_groupBoxUnico.addWidget(self.buttonUnico_OK, 1,1,1,1)
-        self.groupBoxUnico.setLayout(layout_groupBoxUnico)
+        self.groupBoxUnico.setLayout(layout_groupBoxUnico) # adiciona o layout a groupBoxUnico
         
         
         
@@ -233,48 +251,54 @@ class BarOptions():
 
 class MainWindow(QWidget):
     def __init__(self):
-        super(MainWindow, self).__init__()
-        self.setWindowTitle('Agenda inteligente')
+        super(MainWindow, self).__init__() # cria a janela do aplicativo
+        self.setWindowTitle('Agenda inteligente') # define o título da janela
         
-        self.tabs = Tabs()
-        self.buttons = BarOptions()
-        self.mes = 0
-        
-        
-        layout_main_sub1 = QGridLayout()
-        layout_main_sub2 = QVBoxLayout()
-        layout_main = QGridLayout()
+        self.tabs = Tabs() # gera o conjunto de abas
+        self.buttons = BarOptions() # gera a barra de opções
+        self.mes = 0 # define uma referência para os mêses exibidos
         
         
+        layout_main_sub1 = QGridLayout() # cria layout para depositar a barra de opções
+        layout_main_sub2 = QVBoxLayout() # cria layout para depositar o conjunto de abas
+        layout_main = QGridLayout() # cria layout para a janela do aplicativo
         
-        layout_main_sub1.addWidget(self.buttons.main_buttonIN, 0,0,1,1)
-        layout_main_sub1.addWidget(self.buttons.main_buttonOUT, 0,0,1,1)
-        layout_main_sub1.addWidget(self.buttons.Title, 1,0,1,1)
-        layout_main_sub1.addWidget(self.buttons.separator1, 1,0,1,1)
-        layout_main_sub1.addWidget(self.buttons.groupBoxOptions,2,0,1,1)
-        layout_main_sub1.addWidget(self.buttons.groupBoxUnico, 2,0,1,1)
-        layout_main_sub1.addWidget(self.buttons.buttonPersonalInfo, 3,0,1,1)
-        layout_main_sub1.addWidget(self.buttons.buttonConfig, 4,0,1,1)
         
+        # adiciona ao layout da barra de opções os seus elementos
+        layout_main_sub1.addWidget(self.buttons.main_buttonIN, 0,0,1,2)
+        layout_main_sub1.addWidget(self.buttons.main_buttonOUT, 0,0,1,2)
+        layout_main_sub1.addWidget(self.buttons.Title, 1,0,1,2)
+        layout_main_sub1.addWidget(self.buttons.separator1, 1,0,1,2)
+        layout_main_sub1.addWidget(self.buttons.groupBoxOptions,2,0,1,2)
+        layout_main_sub1.addWidget(self.buttons.groupBoxUnico, 2,0,1,2)
+        layout_main_sub1.addWidget(self.buttons.buttonOption_OUT, 3,0,1,1)
+        layout_main_sub1.addWidget(self.buttons.buttonOption_OK, 3,1,1,1)
+        layout_main_sub1.addWidget(self.buttons.buttonPersonalInfo, 4,0,1,2)
+        layout_main_sub1.addWidget(self.buttons.buttonConfig, 5,0,1,2)
+        
+        # esconde os elementos que serão posteriormente chamados
         self.buttons.main_buttonOUT.hide()
         self.buttons.Title.hide()
         self.buttons.groupBoxOptions.hide()
         self.buttons.groupBoxUnico.hide()
+        self.buttons.buttonOption_OUT.hide()
+        self.buttons.buttonOption_OK.hide()
         
         
+        layout_main_sub2.addWidget(self.tabs) # deposita o conjunto de abas ao seu layout 
         
-        layout_main_sub2.addWidget(self.tabs)
+        # adiciona os dois layouts sub ao layout da janela do aplicativo
         layout_main.addLayout(layout_main_sub1, 0,0,1,1)
         layout_main.addLayout(layout_main_sub2, 0,1,1,1)
         
-        self.setLayout(layout_main)
+        self.setLayout(layout_main) # adiciona layout à janela do aplicativo
         
         
-        
+        # conecta os botões do aplicativo a suas respectivas ações
         self.buttons.main_buttonIN.clicked.connect(self.showOptions)
         self.buttons.main_buttonOUT.clicked.connect(self.hideOptions)
         self.buttons.buttonUnico.clicked.connect(self.showUnico)
-        self.buttons.buttonUnico_OUT.clicked.connect(self.hideOption)
+        self.buttons.buttonOption_OUT.clicked.connect(self.hideOption)
         
         self.tabs.calendario.buttonNextMonth.clicked.connect(self.nextMonth)
         self.tabs.calendario.buttonMonthBefore.clicked.connect(self.monthBefore)
@@ -283,11 +307,11 @@ class MainWindow(QWidget):
         self.tabs.calendario.buttonToday.clicked.connect(self.setToday)
         
         
-        
+        # define as dimensões e a posição iniciais da janela do aplicativo
         self.resize(self.tabs.width(), self.tabs.height())
         self.centerOnScreen()
         
-        
+    # move a janela para o centro da tela do monitor
     def centerOnScreen(self):
         resolution = QDesktopWidget().screenGeometry()
         self.move( ( (resolution.width() / 2 ) - (self.width() / 2 ) )-100 , ( (resolution.height() / 2 ) - ( self.height() / 2 ) )-50 )
@@ -302,6 +326,8 @@ class MainWindow(QWidget):
     def showUnico(self):
         self.buttons.groupBoxOptions.hide()
         self.buttons.groupBoxUnico.show()
+        self.buttons.buttonOption_OUT.show()
+        self.buttons.buttonOption_OK.show()
     
     def hideOptions(self):
         self.buttons.main_buttonOUT.hide()
@@ -310,63 +336,22 @@ class MainWindow(QWidget):
         self.buttons.Title.hide()
         self.buttons.groupBoxOptions.hide()
         self.buttons.groupBoxUnico.hide()
+        self.buttons.buttonOption_OUT.hide()
+        self.buttons.buttonOption_OK.hide()
     
     def hideOption(self):
         self.buttons.groupBoxUnico.hide()
         self.buttons.groupBoxOptions.show()
+        self.buttons.buttonOption_OUT.hide()
+        self.buttons.buttonOption_OK.hide()
     
     def nextMonth(self):
         self.mes += 1
-        
-        today = QDate.currentDate()
-        first = today.addDays( -(today.day()-1) )
-        nextFirst = first.addMonths(self.mes)
-        self.tabs.calendario.spinYears.setValue(nextFirst.year())
-        
-        if nextFirst.dayOfWeek() <= 6:
-            nextBegin = nextFirst.addDays( -nextFirst.dayOfWeek() )
-        else:
-            nextBegin = nextFirst.addDays(-7)
-        
-        
-        for i in range(1,43):
-            self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(nextBegin.day() ) + '\n'*3 )
-            
-            if nextBegin.month() != nextFirst.month():
-                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
-            else:
-                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
-            
-            nextBegin = nextBegin.addDays(1)
-        
-        self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(nextFirst.month()).upper()))
-        self.tabs.calendario.showYear.setText('{0}'.format(nextFirst.year()))
+        self.plotMonth('change')
     
     def monthBefore(self):
         self.mes -= 1
-        
-        today = QDate.currentDate()
-        first = today.addDays( -(today.day()-1) )
-        firstBefore = first.addMonths(self.mes)
-        self.tabs.calendario.spinYears.setValue(firstBefore.year())
-        
-        if firstBefore.dayOfWeek() <= 6:
-            beginBefore = firstBefore.addDays( -firstBefore.dayOfWeek() )
-        else:
-            beginBefore = firstBefore.addDays(-7)
-            
-        for i in range(1,43):
-            self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(beginBefore.day() ) + '\n'*3 )
-            
-            if beginBefore.month() != firstBefore.month():
-                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
-            else:
-                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
-            
-            beginBefore = beginBefore.addDays(1)
-        
-        self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(firstBefore.month()).upper()))
-        self.tabs.calendario.showYear.setText('{0}'.format(firstBefore.year()))
+        self.plotMonth('change')
     
     def setMonth(self):
         self.tabs.calendario.buttonSetMonth.hide()
@@ -379,12 +364,7 @@ class MainWindow(QWidget):
     def setMonthOK(self):
         year = self.tabs.calendario.spinYears.value()
         month = self.tabs.calendario.comboBoxMonths.currentIndex()+1
-        setFirst = QDate( year, month, 1 )
-        
-        today = QDate.currentDate()
-        
-        self.mes = ( setFirst.month()-today.month() ) + ( (setFirst.year()-today.year())*12 )
-        
+        self.plotMonth('SET',year,month)
         
         self.tabs.calendario.comboBoxMonths.hide()
         self.tabs.calendario.spinYears.hide()
@@ -392,29 +372,10 @@ class MainWindow(QWidget):
         self.tabs.calendario.buttonSet_OK.hide()
         self.tabs.calendario.buttonSetMonth.show()
         self.tabs.calendario.showYear.show()
-        
-        if setFirst.dayOfWeek() <= 6:
-            setBegin = setFirst.addDays( -setFirst.dayOfWeek() )
-        else:
-            setBegin = setFirst.addDays(-7)
-            
-        for i in range(1,43):
-            self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(setBegin.day() ) + '\n'*3 )
-            
-            if setBegin.month() != setFirst.month():
-                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
-            else:
-                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
-            
-            setBegin = setBegin.addDays(1)
-        
-        self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(setFirst.month()).upper()))
-        self.tabs.calendario.showYear.setText('{0}'.format(setFirst.year()))
     
     def setToday(self):
         self.mes = 0
-        today = QDate.currentDate()
-        self.tabs.calendario.spinYears.setValue(today.year())
+        self.plotMonth('change')
         
         self.tabs.calendario.comboBoxMonths.hide()
         self.tabs.calendario.spinYears.hide()
@@ -422,28 +383,36 @@ class MainWindow(QWidget):
         self.tabs.calendario.buttonSet_OK.hide()
         self.tabs.calendario.buttonSetMonth.show()
         self.tabs.calendario.showYear.show()
-        
+    
+    def plotMonth(self, action, year=1500, month=1):
         today = QDate.currentDate()
         first = today.addDays( -(today.day()-1) )
         
-        if first.dayOfWeek() <= 6:
-            begin = first.addDays( -first.dayOfWeek() )
+        if action == 'change':
+            newFirst = first.addMonths(self.mes)
+            self.tabs.calendario.spinYears.setValue(newFirst.year())
+        elif action == 'SET':
+            newFirst = QDate(year, month, 1)
+            self.mes = ( newFirst.month()-today.month() ) + ( (newFirst.year()-today.year())*12 )
+        
+        if newFirst.dayOfWeek() <= 6:
+            begin = newFirst.addDays( -newFirst.dayOfWeek() )
         else:
-            begin = first.addDays(-7)
+            begin = newFirst.addDays(-7)
             
         for i in range(1,43):
             self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(begin.day() ) + '\n'*3 )
             
-            if begin.month() != first.month():
+            if begin.month() != newFirst.month():
                 self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
             else:
                 self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
             
             begin = begin.addDays(1)
         
-        self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(first.month()).upper()))
-        self.tabs.calendario.showYear.setText('{0}'.format(first.year()))
-
+        self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(newFirst.month()).upper()))
+        self.tabs.calendario.showYear.setText('{0}'.format(newFirst.year()))
+            
 
 
 if __name__ == '__main__':
