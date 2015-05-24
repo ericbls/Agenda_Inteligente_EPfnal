@@ -180,9 +180,9 @@ class Mes(QAbstractScrollArea):
     def setDefault(self):
         self.main_widget = QWidget() # cria a area menor
         
-        self.layout_ScrollArea = QVBoxLayout(self) # cria layout para a area principal
-        self.layout_ScrollArea.addWidget(self.main_widget) # adiciona a area menor ao layout da area principal
-        self.setLayout(self.layout_ScrollArea) # adiciona o layout à area principal
+        layout_ScrollArea = QVBoxLayout(self) # cria layout para a area principal
+        layout_ScrollArea.addWidget(self.main_widget) # adiciona a area menor ao layout da area principal
+        self.setLayout(layout_ScrollArea) # adiciona o layout à area principal
         
         # define a cor do fundo da area menor como cinza
         stylesheet = \
