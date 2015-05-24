@@ -328,6 +328,7 @@ class MainWindow(QWidget):
         
         self.addCompromisso(QDate(2015,5,24))
         self.addCompromisso(QDate(2015,5,24))
+        
     # move a janela para o centro da tela do monitor
     def centerOnScreen(self):
         resolution = QDesktopWidget().screenGeometry()
@@ -459,15 +460,35 @@ class MainWindow(QWidget):
             self.settedCompromissos['{0}'.format(retangulo_dia)] = [data,1]
         self.checkCompromissos()
     
+    def removeCompromisso(self, data):
+        first = data.addDays( -(data.day()-1) )
+        
+        if first.dayOfWeek() <= 6:
+            begin = first.addDays( -first.dayOfWeek() )
+        else:
+            begin = first.addDays(-7)
+        
+        retangulo_dia = 0
+        while begin != data.addDays(1):
+            retangulo_dia += 1
+            begin = begin.addDays(1)
+        
+        if self.settedCompromissos['{0}'.format(retangulo_dia)][1] == 1:
+            self.settedCompromissos.pop('{0}'.format(retangulo_dia))
+        else:
+            self.settedCompromissos['{0}'.format(retangulo_dia)][1] -= 1
+        
+        self.checkCompromissos()
+    
     def checkCompromissos(self):
         today = QDate.currentDate()
         first = today.addMonths(self.mes)
         
-        for comp in self.settedCompromissos:
-            if self.settedCompromissos[comp][0].month() == first.month() and self.settedCompromissos[comp][0].year() == first.year():
-                self.tabs.calendario_Mes.shownDays[comp].setCompromissoLayoutMes('add',self.settedCompromissos[comp][1])
+        for ret_dia,comp in self.settedCompromissos.items():
+            if comp[0].month() == first.month() and comp[0].year() == first.year():
+                self.tabs.calendario_Mes.shownDays[ret_dia].setCompromissoLayoutMes('add',comp[1])
             else:
-                self.tabs.calendario_Mes.shownDays[comp].setCompromissoLayoutMes('remove')
+                self.tabs.calendario_Mes.shownDays[ret_dia].setCompromissoLayoutMes('remove')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
