@@ -8,34 +8,52 @@ class Dia():
         self.tabDayContent = QGraphicsView() #cria retângulo do dia na aba do mês
         self.tabWeekContent = QListView() #cria retângulo do dia na aba da semana
         self.tabMonthContent = QGraphicsView() #cria retângulo do dia na aba do dia
+        self.num_compromissos = 0
         
-    def addCompromisso(self):
-        # cria uma tela para desenhar coisas no retângulo do dia na aba do mês
-        content = QGraphicsScene()
-        content.setSceneRect(QRectF(0,0, self.tabMonthContent.width(), self.tabMonthContent.height() ) )
-        
-        # cria um quadrado
-        tipPolygon = QPolygonF()
-        tipPolygon.append(QPointF(10,10))
-        tipPolygon.append(QPointF(20,10))
-        tipPolygon.append(QPointF(20,20))
-        tipPolygon.append(QPointF(10,20))
-        
-        tip = QGraphicsPolygonItem(tipPolygon, None, None)
-        tip.setPos(0,0)
-        
-        # adiciona o quadrado à tela
-        content.addItem(tip)
-        
-        # adiciona a tela ao retângulo do dia na aba do mês
-        self.tabMonthContent.setScene(content)
+    def setCompromissoLayoutMes(self, action):
+        if action == 'add':
+            # cria uma tela para desenhar coisas no retângulo do dia na aba do mês
+            self.num_compromissos += 1
+            
+            content = QGraphicsScene()
+            content.setSceneRect(QRectF(0,0, 80,40) )
+            
+            for i in range(self.num_compromissos):
+                # cria um quadrado
+                tipPolygon = QPolygonF()
+                tipPolygon.append(QPointF(10,10))
+                tipPolygon.append(QPointF(20,10))
+                tipPolygon.append(QPointF(20,20))
+                tipPolygon.append(QPointF(10,20))
+                
+                if i <= 3:
+                    width = 15*i
+                    height = 0
+                else:
+                    width = 15*(i-4)
+                    height = 15
+                
+                
+                tip = QGraphicsPolygonItem(tipPolygon, None, None)
+                tip.setPos(width,height)
+                
+                # adiciona o quadrado à tela
+                content.addItem(tip)
+            
+            # adiciona a tela ao retângulo do dia na aba do mês
+            self.tabMonthContent.setScene(content)
+        elif action == 'remove':
+            self.num_compromissos -= 1
+            content = QGraphicsScene()
+            content.setSceneRect(QRectF(0,0, 80,40) )
+            self.tabMonthContent.setScene(content)
 
 class Semana():
     print() # por enquanto não faz nada
 
-class Calendario(QAbstractScrollArea):
+class Mes(QAbstractScrollArea):
     def __init__(self):
-        super(Calendario, self).__init__() # cria uma area principal que irá conter todos os elementos do calendário
+        super(Mes, self).__init__() # cria uma area principal que irá conter todos os elementos do calendário
         self.setDefault() # cria uma area menor com fundo cinza
         self.createLayoutMes() # cria os botões do calendário e adiciona os retângulos dos dias
         
@@ -131,7 +149,7 @@ class Calendario(QAbstractScrollArea):
         
         for i in range(1,43):
             self.shownDays['{0}'.format(i)] = Dia() # cria um item cuja chave é o número do termo na grade e o valor é um objeto da classe Dia
-            self.shownDays['{0}'.format(i)].tabMonthContent.resize(50,50) # redimensiona o retângulo do dia na aba do mês 
+            self.shownDays['{0}'.format(i)].tabMonthContent.resize(85.99,40) # redimensiona o retângulo do dia na aba do mês 
             self.shownLabels['{0}'.format(i)] = QLabel(' {0}'.format(begin.day() ) + '\n'*3 ) # cria um item cuja chave é o número do termo na grade e o valor é uma label com o número do dia
             
             # determina as cores dos números dos dias no calendário
@@ -191,9 +209,9 @@ class Tabs(QTabWidget):
         self.tab2 = QWidget(self)
         self.tab3 = QWidget(self)
         
-        self.calendario = Calendario() # cria um objeto da classe Calendario
+        self.calendario_Mes = Mes() # cria um objeto da classe Mes()
         layout_tab1 = QVBoxLayout() # cria layout para a aba tab1
-        layout_tab1.addWidget(self.calendario) # adiciona o calendário ao layout da aba tab1
+        layout_tab1.addWidget(self.calendario_Mes) # adiciona o calendário ao layout da aba tab1
         self.tab1.setLayout(layout_tab1) # adiciona o layout à tab1
         
         
@@ -257,6 +275,7 @@ class MainWindow(QWidget):
         self.tabs = Tabs() # gera o conjunto de abas
         self.buttons = BarOptions() # gera a barra de opções
         self.mes = 0 # define uma referência para os mêses exibidos
+        self.settedCompromissos = dict()
         
         
         layout_main_sub1 = QGridLayout() # cria layout para depositar a barra de opções
@@ -300,17 +319,19 @@ class MainWindow(QWidget):
         self.buttons.buttonUnico.clicked.connect(self.showUnico)
         self.buttons.buttonOption_OUT.clicked.connect(self.hideOption)
         
-        self.tabs.calendario.buttonNextMonth.clicked.connect(self.nextMonth)
-        self.tabs.calendario.buttonMonthBefore.clicked.connect(self.monthBefore)
-        self.tabs.calendario.buttonSetMonth.clicked.connect(self.setMonth)
-        self.tabs.calendario.buttonSet_OK.clicked.connect(self.setMonthOK)
-        self.tabs.calendario.buttonToday.clicked.connect(self.setToday)
+        self.tabs.calendario_Mes.buttonNextMonth.clicked.connect(self.nextMonth)
+        self.tabs.calendario_Mes.buttonMonthBefore.clicked.connect(self.monthBefore)
+        self.tabs.calendario_Mes.buttonSetMonth.clicked.connect(self.setMonth)
+        self.tabs.calendario_Mes.buttonSet_OK.clicked.connect(self.setMonthOK)
+        self.tabs.calendario_Mes.buttonToday.clicked.connect(self.setToday)
         
         
         # define as dimensões e a posição iniciais da janela do aplicativo
         self.resize(self.tabs.width(), self.tabs.height())
         self.centerOnScreen()
         
+        self.addCompromisso(QDate(2015,5,24))
+        self.addCompromisso(QDate(2015,5,24))
     # move a janela para o centro da tela do monitor
     def centerOnScreen(self):
         resolution = QDesktopWidget().screenGeometry()
@@ -348,41 +369,45 @@ class MainWindow(QWidget):
     def nextMonth(self):
         self.mes += 1
         self.plotMonth('change')
+        self.checkCompromissos()
     
     def monthBefore(self):
         self.mes -= 1
         self.plotMonth('change')
+        self.checkCompromissos()
     
     def setMonth(self):
-        self.tabs.calendario.buttonSetMonth.hide()
-        self.tabs.calendario.showYear.hide()
-        self.tabs.calendario.comboBoxMonths.show()
-        self.tabs.calendario.spinYears.show()
-        self.tabs.calendario.buttonToday.show()
-        self.tabs.calendario.buttonSet_OK.show()
+        self.tabs.calendario_Mes.buttonSetMonth.hide()
+        self.tabs.calendario_Mes.showYear.hide()
+        self.tabs.calendario_Mes.comboBoxMonths.show()
+        self.tabs.calendario_Mes.spinYears.show()
+        self.tabs.calendario_Mes.buttonToday.show()
+        self.tabs.calendario_Mes.buttonSet_OK.show()
     
     def setMonthOK(self):
-        year = self.tabs.calendario.spinYears.value()
-        month = self.tabs.calendario.comboBoxMonths.currentIndex()+1
+        year = self.tabs.calendario_Mes.spinYears.value()
+        month = self.tabs.calendario_Mes.comboBoxMonths.currentIndex()+1
         self.plotMonth('SET',year,month)
+        self.checkCompromissos()
         
-        self.tabs.calendario.comboBoxMonths.hide()
-        self.tabs.calendario.spinYears.hide()
-        self.tabs.calendario.buttonToday.hide()
-        self.tabs.calendario.buttonSet_OK.hide()
-        self.tabs.calendario.buttonSetMonth.show()
-        self.tabs.calendario.showYear.show()
+        self.tabs.calendario_Mes.comboBoxMonths.hide()
+        self.tabs.calendario_Mes.spinYears.hide()
+        self.tabs.calendario_Mes.buttonToday.hide()
+        self.tabs.calendario_Mes.buttonSet_OK.hide()
+        self.tabs.calendario_Mes.buttonSetMonth.show()
+        self.tabs.calendario_Mes.showYear.show()
     
     def setToday(self):
         self.mes = 0
         self.plotMonth('change')
+        self.checkCompromissos()
         
-        self.tabs.calendario.comboBoxMonths.hide()
-        self.tabs.calendario.spinYears.hide()
-        self.tabs.calendario.buttonToday.hide()
-        self.tabs.calendario.buttonSet_OK.hide()
-        self.tabs.calendario.buttonSetMonth.show()
-        self.tabs.calendario.showYear.show()
+        self.tabs.calendario_Mes.comboBoxMonths.hide()
+        self.tabs.calendario_Mes.spinYears.hide()
+        self.tabs.calendario_Mes.buttonToday.hide()
+        self.tabs.calendario_Mes.buttonSet_OK.hide()
+        self.tabs.calendario_Mes.buttonSetMonth.show()
+        self.tabs.calendario_Mes.showYear.show()
     
     def plotMonth(self, action, year=1500, month=1):
         today = QDate.currentDate()
@@ -390,7 +415,7 @@ class MainWindow(QWidget):
         
         if action == 'change':
             newFirst = first.addMonths(self.mes)
-            self.tabs.calendario.spinYears.setValue(newFirst.year())
+            self.tabs.calendario_Mes.spinYears.setValue(newFirst.year())
         elif action == 'SET':
             newFirst = QDate(year, month, 1)
             self.mes = ( newFirst.month()-today.month() ) + ( (newFirst.year()-today.year())*12 )
@@ -401,19 +426,44 @@ class MainWindow(QWidget):
             begin = newFirst.addDays(-7)
             
         for i in range(1,43):
-            self.tabs.calendario.shownLabels['{0}'.format(i)].setText(' {0}'.format(begin.day() ) + '\n'*3 )
+            self.tabs.calendario_Mes.shownLabels['{0}'.format(i)].setText(' {0}'.format(begin.day() ) + '\n'*3 )
             
             if begin.month() != newFirst.month():
-                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
+                self.tabs.calendario_Mes.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
             else:
-                self.tabs.calendario.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
+                self.tabs.calendario_Mes.shownLabels['{0}'.format(i)].setStyleSheet('color: black')
             
             begin = begin.addDays(1)
         
-        self.tabs.calendario.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(newFirst.month()).upper()))
-        self.tabs.calendario.showYear.setText('{0}'.format(newFirst.year()))
-            
-
+        self.tabs.calendario_Mes.buttonSetMonth.setText('{0}'.format(QDate.longMonthName(newFirst.month()).upper()))
+        self.tabs.calendario_Mes.showYear.setText('{0}'.format(newFirst.year()))
+    
+    def addCompromisso(self, data):
+        first = data.addDays( -(data.day()-1) )
+        
+        if first.dayOfWeek() <= 6:
+            begin = first.addDays( -first.dayOfWeek() )
+        else:
+            begin = first.addDays(-7)
+        
+        retangulo_dia = 0
+        while begin != data.addDays(1):
+            retangulo_dia += 1
+            begin = begin.addDays(1)
+        
+        self.settedCompromissos['{0}'.format(retangulo_dia)] = data
+        print(self.settedCompromissos)
+        self.checkCompromissos()
+        
+    def checkCompromissos(self):
+        today = QDate.currentDate()
+        first = today.addMonths(self.mes)
+        
+        for comp in self.settedCompromissos:
+            if self.settedCompromissos[comp].month() == first.month():
+                self.tabs.calendario_Mes.shownDays[comp].setCompromissoLayoutMes('add')
+            else:
+                self.tabs.calendario_Mes.shownDays[comp].setCompromissoLayoutMes('remove')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
