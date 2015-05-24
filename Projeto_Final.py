@@ -379,6 +379,8 @@ class MainWindow(QWidget):
         self.tabs.calendario_Mes.spinYears.show()
         self.tabs.calendario_Mes.buttonToday.show()
         self.tabs.calendario_Mes.buttonSet_OK.show()
+        self.tabs.calendario_Mes.buttonMonthBefore.setDisabled(True)
+        self.tabs.calendario_Mes.buttonNextMonth.setDisabled(True)
     
     def setMonthOK(self):
         year = self.tabs.calendario_Mes.spinYears.value()
@@ -392,6 +394,8 @@ class MainWindow(QWidget):
         self.tabs.calendario_Mes.buttonSet_OK.hide()
         self.tabs.calendario_Mes.buttonSetMonth.show()
         self.tabs.calendario_Mes.showYear.show()
+        self.tabs.calendario_Mes.buttonMonthBefore.setDisabled(False)
+        self.tabs.calendario_Mes.buttonNextMonth.setDisabled(False)
     
     def setToday(self):
         self.mes = 0
@@ -451,15 +455,14 @@ class MainWindow(QWidget):
             self.settedCompromissos['{0}'.format(retangulo_dia)][1] += 1
         else:
             self.settedCompromissos['{0}'.format(retangulo_dia)] = [data,1]
-        print(self.settedCompromissos)
         self.checkCompromissos()
-        
+    
     def checkCompromissos(self):
         today = QDate.currentDate()
         first = today.addMonths(self.mes)
         
         for comp in self.settedCompromissos:
-            if self.settedCompromissos[comp][0].month() == first.month():
+            if self.settedCompromissos[comp][0].month() == first.month() and self.settedCompromissos[comp][0].year() == first.year():
                 self.tabs.calendario_Mes.shownDays[comp].setCompromissoLayoutMes('add',self.settedCompromissos[comp][1])
             else:
                 self.tabs.calendario_Mes.shownDays[comp].setCompromissoLayoutMes('remove')
