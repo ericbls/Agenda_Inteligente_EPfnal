@@ -408,6 +408,8 @@ class MainWindow(QWidget):
         self.tabs.calendario_Mes.buttonSet_OK.hide()
         self.tabs.calendario_Mes.buttonSetMonth.show()
         self.tabs.calendario_Mes.showYear.show()
+        self.tabs.calendario_Mes.buttonMonthBefore.setDisabled(False)
+        self.tabs.calendario_Mes.buttonNextMonth.setDisabled(False)
     
     def plotMonth(self, action, year=1500, month=1):
         today = QDate.currentDate()
