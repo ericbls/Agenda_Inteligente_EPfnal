@@ -8,17 +8,14 @@ class Dia():
         self.tabDayContent = QGraphicsView() #cria retângulo do dia na aba do mês
         self.tabWeekContent = QListView() #cria retângulo do dia na aba da semana
         self.tabMonthContent = QGraphicsView() #cria retângulo do dia na aba do dia
-        self.num_compromissos = 0
         
-    def setCompromissoLayoutMes(self, action):
+    def setCompromissoLayoutMes(self, action, num_compromissos=0):
         if action == 'add':
             # cria uma tela para desenhar coisas no retângulo do dia na aba do mês
-            self.num_compromissos += 1
-            
             content = QGraphicsScene()
-            content.setSceneRect(QRectF(0,0, 80,40) )
+            content.setSceneRect(QRectF(0,0,80,40) )
             
-            for i in range(self.num_compromissos):
+            for i in range(num_compromissos):
                 # cria um quadrado
                 tipPolygon = QPolygonF()
                 tipPolygon.append(QPointF(10,10))
@@ -43,9 +40,8 @@ class Dia():
             # adiciona a tela ao retângulo do dia na aba do mês
             self.tabMonthContent.setScene(content)
         elif action == 'remove':
-            self.num_compromissos -= 1
             content = QGraphicsScene()
-            content.setSceneRect(QRectF(0,0, 80,40) )
+            content.setSceneRect(QRectF(0,0,80,40) )
             self.tabMonthContent.setScene(content)
 
 class Semana():
@@ -451,7 +447,10 @@ class MainWindow(QWidget):
             retangulo_dia += 1
             begin = begin.addDays(1)
         
-        self.settedCompromissos['{0}'.format(retangulo_dia)] = data
+        if '{0}'.format(retangulo_dia) in self.settedCompromissos:
+            self.settedCompromissos['{0}'.format(retangulo_dia)][1] += 1
+        else:
+            self.settedCompromissos['{0}'.format(retangulo_dia)] = [data,1]
         print(self.settedCompromissos)
         self.checkCompromissos()
         
@@ -460,8 +459,8 @@ class MainWindow(QWidget):
         first = today.addMonths(self.mes)
         
         for comp in self.settedCompromissos:
-            if self.settedCompromissos[comp].month() == first.month():
-                self.tabs.calendario_Mes.shownDays[comp].setCompromissoLayoutMes('add')
+            if self.settedCompromissos[comp][0].month() == first.month():
+                self.tabs.calendario_Mes.shownDays[comp].setCompromissoLayoutMes('add',self.settedCompromissos[comp][1])
             else:
                 self.tabs.calendario_Mes.shownDays[comp].setCompromissoLayoutMes('remove')
 
