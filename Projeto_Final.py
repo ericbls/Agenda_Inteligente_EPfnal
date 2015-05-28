@@ -9,11 +9,12 @@ class Dia():
         self.tabWeekContent = QListView() #cria retângulo do dia na aba da semana
         self.tabMonthContent = QGraphicsView() #cria retângulo do dia na aba do dia
         
+        
     def setCompromissoLayoutMes(self, action, num_compromissos=0):
         if action == 'add':
             # cria uma tela para desenhar coisas no retângulo do dia na aba do mês
             content = QGraphicsScene()
-            content.setSceneRect(QRectF(0,0,80,40) )
+            content.setSceneRect(QRectF(0,0,85,45))
             
             for i in range(num_compromissos):
                 # cria um quadrado
@@ -23,16 +24,25 @@ class Dia():
                 tipPolygon.append(QPointF(20,20))
                 tipPolygon.append(QPointF(10,20))
                 
-                if i <= 3:
+                if i <= 4:
                     width = 15*i
-                    height = 0
+                    height = -5
+                elif i <= 9:
+                    width = 15*(i-5)
+                    height = 10
+                elif i <= 13:
+                    width = 15*(i-10)
+                    height = 25
                 else:
-                    width = 15*(i-4)
-                    height = 15
+                    more = QGraphicsTextItem('+{0}'.format(num_compromissos-14))
+                    more.setPos(66.5,30)
+                    content.addItem(more)
+                    break
                 
                 
                 tip = QGraphicsPolygonItem(tipPolygon, None, None)
                 tip.setPos(width,height)
+                tip.setBrush(QBrush(Qt.red))
                 
                 # adiciona o quadrado à tela
                 content.addItem(tip)
@@ -41,11 +51,13 @@ class Dia():
             self.tabMonthContent.setScene(content)
         elif action == 'remove':
             content = QGraphicsScene()
-            content.setSceneRect(QRectF(0,0,80,40) )
+            content.setSceneRect(QRectF(0,0,85,45) )
             self.tabMonthContent.setScene(content)
+    def teste(self):
+        print('Clicked')
 
 class Semana():
-    print() # por enquanto não faz nada
+    pass    
 
 class Mes(QAbstractScrollArea):
     def __init__(self):
@@ -54,7 +66,7 @@ class Mes(QAbstractScrollArea):
         self.createLayoutMes() # cria os botões do calendário e adiciona os retângulos dos dias
         
     def createLayoutMes(self):
-        layout_Mes = QGridLayout(self) # cria um layout de grade para a area com fundo cinza
+        layout_Mes = QGridLayout(self.main_widget) # cria um layout de grade para a area com fundo cinza
         
         today = QDate.currentDate() # cria um objeto da classe QDate com a data do dia atual
         first = today.addDays( -(today.day()-1) ) # calcula o primeiro dia do mês atual
@@ -153,8 +165,8 @@ class Mes(QAbstractScrollArea):
         
         for i in range(1,43):
             self.shownDays['{0}'.format(i)] = Dia() # cria um item cuja chave é o número do termo na grade e o valor é um objeto da classe Dia
-            self.shownDays['{0}'.format(i)].tabMonthContent.resize(85.99,40) # redimensiona o retângulo do dia na aba do mês 
-            self.shownLabels['{0}'.format(i)] = QLabel(' {0}'.format(begin.day() ) + '\n'*3 ) # cria um item cuja chave é o número do termo na grade e o valor é uma label com o número do dia
+            self.shownDays['{0}'.format(i)].tabMonthContent.resize(90,50) # redimensiona o retângulo do dia na aba do mês 
+            self.shownLabels['{0}'.format(i)] = QLabel(' {0}'.format(begin.day() ) + '\n'*4 ) # cria um item cuja chave é o número do termo na grade e o valor é uma label com o número do dia
             
             # determina as cores dos números dos dias no calendário
             if begin.month() != today.month():
@@ -183,14 +195,12 @@ class Mes(QAbstractScrollArea):
                 layout_Mes.addWidget(self.shownDays['{0}'.format(i)].tabMonthContent, 8, (i-36),1,1)
                 layout_Mes.addWidget(self.shownLabels['{0}'.format(i)], 8,(i-36),1,3)
             begin = begin.addDays(1)
-        self.main_widget.setLayout(layout_Mes)
     
     def setDefault(self):
         self.main_widget = QWidget() # cria a area menor
         
         layout_ScrollArea = QVBoxLayout(self) # cria layout para a area principal
         layout_ScrollArea.addWidget(self.main_widget) # adiciona a area menor ao layout da area principal
-        self.setLayout(layout_ScrollArea) # adiciona o layout à area principal
         
         # define a cor do fundo da area menor como cinza
         stylesheet = \
@@ -206,7 +216,7 @@ class Mes(QAbstractScrollArea):
 class Tabs(QTabWidget):
     def __init__(self):
         super(Tabs, self).__init__() # cria area principal, capaz de receber abas
-        self.setFixedSize(720,540) # define dimensões fixas para a area principal
+        self.setFixedSize(850,600) # define dimensões fixas para a area principal
         
         # cria tres abas 
         self.tab1 = QWidget(self)
@@ -214,10 +224,8 @@ class Tabs(QTabWidget):
         self.tab3 = QWidget(self)
         
         self.calendario_Mes = Mes() # cria um objeto da classe Mes()
-        layout_tab1 = QVBoxLayout() # cria layout para a aba tab1
+        layout_tab1 = QVBoxLayout(self.tab1) # cria layout para a aba tab1
         layout_tab1.addWidget(self.calendario_Mes) # adiciona o calendário ao layout da aba tab1
-        self.tab1.setLayout(layout_tab1) # adiciona o layout à tab1
-        
         
         # adiciona as três abas à area principal
         self.addTab(self.tab1, 'Mês')
@@ -232,7 +240,7 @@ class BarOptions():
         self.buttonPersonalInfo = QPushButton('Informações\n Pessoais')
         self.buttonConfig = QPushButton('Configurações')
         self.separator1 = QWidget()
-        
+
         self.buttonDiario = QPushButton('Diário')
         
         self.buttonSemanal = QPushButton('Semanal')
@@ -254,18 +262,16 @@ class BarOptions():
         self.groupBoxUnico = QGroupBox('Único') # cria uma area contornada para agrupar os elementos da opção compromisso único
         
         # cria layout para groupBoxOptions e adiciona todas as opções de tipo de compromisso
-        layout_groupBoxOptions = QVBoxLayout()
+        layout_groupBoxOptions = QVBoxLayout(self.groupBoxOptions)
         layout_groupBoxOptions.addWidget(self.buttonUnico)
         layout_groupBoxOptions.addWidget(self.buttonDiario)
         layout_groupBoxOptions.addWidget(self.buttonSemanal)
         layout_groupBoxOptions.addWidget(self.buttonMensal)
         layout_groupBoxOptions.addWidget(self.buttonFlexivel)
-        self.groupBoxOptions.setLayout(layout_groupBoxOptions) # adiciona o layout a groupBoxOptions
         
         
         # cria layout para groupBoxUnico e adiciona todos os elementos da opção compromisso único
-        layout_groupBoxUnico = QGridLayout()
-        self.groupBoxUnico.setLayout(layout_groupBoxUnico) # adiciona o layout a groupBoxUnico
+        layout_groupBoxUnico = QGridLayout(self.groupBoxUnico)
         
         
         
@@ -285,7 +291,7 @@ class MainWindow(QWidget):
         layout_main_sub1 = QGridLayout() # cria layout para depositar a barra de opções
         layout_main_sub2 = QVBoxLayout() # cria layout para depositar o conjunto de abas
         layout_main = QGridLayout() # cria layout para a janela do aplicativo
-        
+        layout_main_sub1.SetFixedSize
         
         # adiciona ao layout da barra de opções os seus elementos
         layout_main_sub1.addWidget(self.buttons.main_buttonIN, 0,0,1,2)
@@ -334,9 +340,12 @@ class MainWindow(QWidget):
         self.resize(self.tabs.width(), self.tabs.height())
         self.centerOnScreen()
         
-        self.addCompromisso(QDate(2015,5,24))
-        self.addCompromisso(QDate(2015,5,24))
         
+        for i in range(30):
+            self.addCompromisso(QDate(2015,5,30))
+        
+        
+    
     # move a janela para o centro da tela do monitor
     def centerOnScreen(self):
         resolution = QDesktopWidget().screenGeometry()
@@ -437,7 +446,7 @@ class MainWindow(QWidget):
             begin = newFirst.addDays(-7)
             
         for i in range(1,43):
-            self.tabs.calendario_Mes.shownLabels['{0}'.format(i)].setText(' {0}'.format(begin.day() ) + '\n'*3 )
+            self.tabs.calendario_Mes.shownLabels['{0}'.format(i)].setText(' {0}'.format(begin.day() ) + '\n'*4 )
             
             if begin.month() != newFirst.month():
                 self.tabs.calendario_Mes.shownLabels['{0}'.format(i)].setStyleSheet('color: gray')
