@@ -6,6 +6,7 @@
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
+import sys 
 
 from PyQt4 import QtCore, QtGui
 
@@ -23,7 +24,11 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QtGui.QWidget):
+    def __init__(self):
+        QtGui.QWidget.__init__(self)
+        self.setupUi(self)
+        
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.setWindowModality(QtCore.Qt.ApplicationModal)
@@ -35,7 +40,7 @@ class Ui_MainWindow(object):
         MainWindow.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         MainWindow.setAcceptDrops(True)
         MainWindow.setWindowTitle(_fromUtf8("Agenda Inteligente"))
-        MainWindow.setDocumentMode(False)
+        MainWindow.setDocumentMode(True)
         MainWindow.setTabShape(QtGui.QTabWidget.Rounded)
         MainWindow.setUnifiedTitleAndToolBarOnMac(False)
         self.centralwidget = QtGui.QWidget(MainWindow)
@@ -380,4 +385,14 @@ class Ui_MainWindow(object):
         self.actionSemana.setText(_translate("MainWindow", "Semana", None))
         self.actionDia.setText(_translate("MainWindow", "Dia", None))
         self.actionEditar_seu_perfil.setText(_translate("MainWindow", "Editar seu perfil", None))
+        self.printMainWindow_btn.clicked.connect(self.printMainWindow)
 
+    def printMainWindow(self):
+        print ("MainWindow")
+        
+if __name__ == '__main__':
+    app = QtGui.QApplication(sys.argv)
+    ex = Ui_MainWindow()
+    ex.show()
+    sys.exit(app.exec_())
+    
