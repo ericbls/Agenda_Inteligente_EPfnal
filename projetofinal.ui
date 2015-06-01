@@ -54,9 +54,9 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
-    <widget class="paginainicial" name="tab">
+    <widget class="QWidget" name="tab">
      <attribute name="title">
       <string>Calendário Mensal</string>
      </attribute>
@@ -100,7 +100,7 @@
        <number>0</number>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="page_3">
        <widget class="QLabel" name="titulo_semana2">
@@ -853,9 +853,6 @@ p, li { white-space: pre-wrap; }
      </item>
     </layout>
    </widget>
-   <zorder>tabWidget</zorder>
-   <zorder>verticalLayoutWidget</zorder>
-   <zorder>calendarWidget_3</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menuBar">
@@ -918,14 +915,6 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>paginainicial</class>
-   <extends>QWidget</extends>
-   <header location="global">paginainicial.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
