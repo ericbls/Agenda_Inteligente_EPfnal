@@ -4,10 +4,6 @@ from PyQt4.QtCore import *
 class CustomPushButton(QPushButton):
     def __init__(self, parent=None):
         super(CustomPushButton, self).__init__(parent)
-        self.setStyleSheet('color: black; \n background-color: light gray')
-        self.setFixedSize(20,25)
-        self.clicked.connect(self.color)
-        self.idx = 0
     
     def setDEFAULT(self):
         self.setStyleSheet('color: black; \n background-color: light gray')
@@ -17,8 +13,17 @@ class CustomPushButton(QPushButton):
             self.setStyleSheet('color: white; \n background-color: gray')
             self.idx = 1
         else:
-            self.setStyleSheet('color: black; \n background-color: light gray')
+            self.setDEFAULT()
             self.idx = 0
+    
+    def setFunc(self, func):
+        if func == 'SELECT DAY':
+            self.setDEFAULT()
+            self.setFixedSize(20,25)
+            self.clicked.connect(self.color)
+            self.idx = 0
+        elif func == 'DELETE':
+            self.indice = None
 
 class CustomTextEdit(QTextEdit):
     def __init__(self, text):

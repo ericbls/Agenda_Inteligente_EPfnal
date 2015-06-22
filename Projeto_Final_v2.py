@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         
         self.main = QWidget()
         layout = QVBoxLayout(self.main)
-        layout.addWidget()
+        
         self.setCentralWidget(self.main)
         
         self.resize(720,540)

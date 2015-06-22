@@ -1,24 +1,27 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from copy import *
 
 class Compromisso():
-    def __init__(self, idx, titulo, descricao):
+    def __init__(self, idx, titulo, descricao, local):
         self.indice = idx
         self.titulo = titulo
         if descricao == 'Descrição':
             self.descricao = 'Sem descrição'
         else:
             self.descricao = descricao
+        
+        if local in ('Local.ex.:SP,São Paulo,Rua,n°',None,''):
+            self.endereco = None
+        else:
+            self.endereco = local
+        
         self.buttonCompromisso = QPushButton('{0}'.format(self.titulo))
         
         self.buttonCompromisso.clicked.connect(self.execFunc)
         
-    def setFixo(self, endereco, repetir, transporte, inicioDate, inicioTime, terminoDate, terminoTime, xInicio, retangMesInicio, retangMesTermino, retangSemanaInicio, retangSemanaTermino, allDay, dayOrder):
+    def setFixo(self, repetir, transporte, inicioDate, inicioTime, terminoDate, terminoTime, xInicio, retangMesInicio, retangMesTermino, retangSemanaInicio, retangSemanaTermino, allDay, dayOrder):
         self.tipo = 'FIXO'
-        if endereco == 'Local':
-            self.endereco = 'Sem endereço'
-        else:
-            self.endereco = endereco
         self.repetir = repetir
         self.transporte = transporte
         self.inicioDate = inicioDate
@@ -32,6 +35,8 @@ class Compromisso():
         self.allDay = allDay
         
         self.dayOrder = dayOrder
+        if self.inicioDate != self.terminoDate:
+            self.dayOrderTermino = 0
         
         if self.allDay == False:
             self.xInicio = xInicio
@@ -128,6 +133,7 @@ class Compromisso():
                 self.buttonCompromisso.setStyleSheet('background-color: cyan;\n color: black')
         
         self.setListTabSemana()
+        self.setListDescricao()
     
     def setFlexivel(self, duracao, prioridade, dataLimite, timeDas, timeAte, diasDaSemana):
         self.tipo = 'FLEXIVEL'
@@ -138,12 +144,40 @@ class Compromisso():
         self.timeAte = timeAte
         self.diasDaSemana = diasDaSemana
     
-    def setTempConfig(self, yInicio, yTermino, inicioDate, inicioTime, terminoDate, terminoTime, dayOrder):
-        pass
+    def setTempConfig(self, repetir, yInicio, yTermino, inicioDate, inicioTime, terminoDate, terminoTime, retangMesInicio, retangMesTermino, retangSemanaInicio, retangSemanaTermino, dayOrder, flexOrder):
+        self.repetir = repetir
+        self.yInicio = yInicio
+        self.yTermino = yTermino
+        self.inicioDate = inicioDate
+        self.inicioTime = inicioTime
+        self.terminoDate = terminoDate
+        self.terminoTime = terminoTime
+        self.dayOrder = dayOrder
+        self.flexOrder = flexOrder
+        self.setListDescricao()
     
     def setListDescricao(self):
+        buffer = ''
         if self.tipo == 'FIXO':
-            buffer = 'Título:\n  {0}\nLocal:\n  {1}'.format(self.titulos)
+            buffer = 'Título:\n  {0}\n\nLocal:\n  {1}\n\nTrasnporte disponível:\n  {2}\n\n'.format(self.titulo, self.endereco, self.transporte)
+            if self.repetir == 'Nunca':
+                buffer += 'Repetir: Nunca\n\nInicio:\n  {0} de {1} de {2}\n  '.format(self.inicioDate.day(), QDate.longMonthName(self.inicioDate.month()), self.inicioDate.year())
+                if self.inicioTime.minute() < 10:
+                    buffer += '{0}h0{1}\n\n'.format(self.inicioTime.hour(), self.inicioTime.minute())
+                else:
+                    buffer += '{0}h{1}\n\n'.format(self.inicioTime.hour(), self.inicioTime.minute())
+                buffer += 'Término:\n  {0} de {1} de {2}\n  '.format(self.terminoDate.day(), QDate.longMonthName(self.terminoDate.month()), self.terminoDate.year())
+                if self.terminoTime.minute() < 10:
+                    buffer += '{0}h0{1}\n\n'.format(self.terminoTime.hour(), self.terminoTime.minute())
+                else:
+                    buffer += '{0}h{1}\n\n'.format(self.terminoTime.hour(), self.terminoTime.minute())
+                buffer += 'Descrição:\n  {0}'.format(self.descricao)
+                
+        else:
+            pass
+        
+        self.listDescricao = QStandardItem(buffer)
+        self.listDescricao.setEditable(False)
     
     def setListTabSemana(self):
         buffer = ''
