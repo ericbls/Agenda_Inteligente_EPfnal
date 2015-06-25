@@ -2,9 +2,11 @@ import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from CustomPyQt import *
+from BarOptions import *
 from copy import *
 from Compromissos import *
 import simplejson, urllib
+from random import choice
 googleGeocodeUrl = 'http://maps.googleapis.com/maps/api/geocode/json?'
 #____________________________________________________________________________________________________________________________________
 
@@ -372,85 +374,7 @@ class Tabs(QTabWidget):
         self.certeza.hide()
         
         self.delCompromisso.show()
-
-class BarOptions():
-    def __init__(self):
-        # cria os botões da barra de opções
         
-        self.main_buttonIN = QPushButton('Novo Compromisso')
-        self.main_buttonOUT = QPushButton('Cancelar')
-        self.buttonPersonalInfo = QPushButton('Meu Perfil')
-        self.buttonConfig = QPushButton('Configurações')
-        self.buttonSetOK = QPushButton('OK')
-        self.separator1 = QWidget()
-        self.separator2 = QWidget()
-        self.separator3 = QWidget()
-        
-        # cria barra para escrever o título do compromisso
-        self.Title = QLineEdit()
-        self.Title.setPlaceholderText('Título')
-        self.endereco = QLineEdit()
-        self.endereco.setPlaceholderText('Local.ex.:SP,São Paulo,Rua,n°')
-        self.Descricao = CustomTextEdit('Descrição')
-        self.optionFixo = QRadioButton('Fixo')
-        self.optionFlexivel = QRadioButton('Flexível')
-        
-        self.repetir = QComboBox()
-        self.repetirLabel = QLabel('Repetir')
-        self.repetir.addItems(['Nunca','Todo Dia','Toda Semana','Todo Mês'])
-        self.transporte = QComboBox()
-        self.transporteLabel = QLabel('Transporte')
-        self.transporte.addItems(['A Pé','Bicicleta','Carro','Moto','Metrô','Ônibus'])
-        self.inicioLabel = QLabel('Horário de Início')
-        self.inicioTime = QTimeEdit()
-        self.inicioTime.setDisplayFormat('HH:mm')
-        self.inicioDate = QDateEdit()
-        self.terminoLabel = QLabel('Horário de Término')
-        self.terminoTime = QTimeEdit()
-        self.terminoTime.setDisplayFormat('HH:mm')
-        self.terminoDate = QDateEdit()
-        self.allDay = QCheckBox('Dia todo')
-        
-        self.dataLimiteCheck = QCheckBox('Data limite')
-        self.dataLimite = QDateEdit()
-        self.dataLimite.setDisabled(True)
-        self.spinDuracaoLabel = QLabel('Duração')
-        self.spinDuracao = QTimeEdit()
-        self.spinDuracao.setDisplayFormat('HH:mm')
-        self.prioridade = QComboBox()
-        self.prioridadeLabel = QLabel('Prioridade')
-        self.prioridade.addItems(['Baixa','Média','Alta'])
-        self.restricaoTimeCheck = QCheckBox('Restrição de horário')
-        self.restricaoTimeDasLabel = QLabel('               Das:')
-        self.restricaoTimeDas = QTimeEdit()
-        self.restricaoTimeDas.setDisplayFormat('HH:mm')
-        self.restricaoTimeDas.setDisabled(True)
-        self.restricaoTimeAteLabel = QLabel('                 Às:')
-        self.restricaoTimeAte = QTimeEdit()
-        self.restricaoTimeAte.setDisplayFormat('HH:mm')
-        self.restricaoTimeAte.setDisabled(True)
-        self.restricaoDayOfWeekCheck = QCheckBox('Dias indisponíveis')
-        self.restricaoSeg = CustomPushButton('S')
-        self.restricaoSeg.setFunc('SELECT DAY')
-        self.restricaoSeg.setDisabled(True)
-        self.restricaoTer = CustomPushButton('T')
-        self.restricaoTer.setFunc('SELECT DAY')
-        self.restricaoTer.setDisabled(True)
-        self.restricaoQua = CustomPushButton('Q')
-        self.restricaoQua.setFunc('SELECT DAY')
-        self.restricaoQua.setDisabled(True)
-        self.restricaoQui = CustomPushButton('Q')
-        self.restricaoQui.setFunc('SELECT DAY')
-        self.restricaoQui.setDisabled(True)
-        self.restricaoSex = CustomPushButton('S')
-        self.restricaoSex.setFunc('SELECT DAY')
-        self.restricaoSex.setDisabled(True)
-        self.restricaoSab = CustomPushButton('S')
-        self.restricaoSab.setFunc('SELECT DAY')
-        self.restricaoSab.setDisabled(True)
-        self.restricaoDom = CustomPushButton('D')
-        self.restricaoDom.setFunc('SELECT DAY')
-        self.restricaoDom.setDisabled(True)
         
 #_____________________________________________________________________________________________________________________________
 
@@ -522,10 +446,8 @@ class MainWindow(QWidget):
         
         layout_main_sub1.addWidget(self.buttons.Descricao, 12,0,1,8)
         layout_main_sub1.addWidget(self.buttons.buttonSetOK, 13,0,1,8)
-        layout_main_sub1.addWidget(self.buttons.buttonPersonalInfo, 14,0,1,8)
+        layout_main_sub1.addWidget(self.buttons.buttonConfig, 14,0,1,8)
         layout_main_sub1.addWidget(self.buttons.separator2, 15,0,1,8)
-        layout_main_sub1.addWidget(self.buttons.buttonConfig, 16,0,1,8)
-        layout_main_sub1.addWidget(self.buttons.separator3, 17,0,1,8)
         
         layout_main_sub2.addWidget(self.tabs)
         
@@ -576,21 +498,8 @@ class MainWindow(QWidget):
         self.buttons.Descricao.hide()
         self.buttons.buttonSetOK.hide()
         self.buttons.separator2.hide()
-        self.buttons.separator3.hide()
         
         
-        # conecta os botões do aplicativo a suas respectivas ações
-        self.buttons.main_buttonIN.clicked.connect(self.showOptions)
-        self.buttons.main_buttonOUT.clicked.connect(self.hideOptions)
-        self.buttons.optionFixo.clicked.connect(self.checkFixoFlexivel)
-        self.buttons.optionFlexivel.clicked.connect(self.checkFixoFlexivel)
-        self.buttons.buttonPersonalInfo.clicked.connect(self.showPerfil)
-        self.buttons.buttonConfig.clicked.connect(self.showConfig)
-        self.buttons.buttonSetOK.clicked.connect(self.addCompromisso)
-        self.buttons.dataLimiteCheck.clicked.connect(self.setDataLimite)
-        self.buttons.restricaoTimeCheck.clicked.connect(self.setRestricaoTime)
-        self.buttons.restricaoDayOfWeekCheck.clicked.connect(self.setRestricaoDayOfWeek)
-        self.buttons.allDay.clicked.connect(self.setAllDay)
         
         self.tabs.calendario_Mes.buttonNextMonth.clicked.connect(self.nextMonth)
         self.tabs.calendario_Mes.buttonMonthBefore.clicked.connect(self.monthBefore)
@@ -607,6 +516,7 @@ class MainWindow(QWidget):
         self.tabs.dia.nextDay.clicked.connect(self.nextDay)
         self.tabs.dia.dayBefore.clicked.connect(self.dayBefore)
         
+        self.tabs.editarCompromisso.clicked.connect(self.editarCompromisso)
         self.tabs.certeza.clicked.connect(self.removeCompromisso)
         
         # define as dimensões e a posição iniciais da janela do aplicativo
@@ -618,285 +528,6 @@ class MainWindow(QWidget):
     def centerOnScreen(self):
         resolution = QDesktopWidget().screenGeometry()
         self.move( ( (resolution.width() / 2 ) - (self.width() / 2 ) )-100 , ( (resolution.height() / 2 ) - ( self.height() / 2 ) )-50 )
-    
-    def showOptions(self):
-        self.buttons.main_buttonIN.hide()
-        self.buttons.separator1.hide()
-        self.buttons.separator2.hide()
-        self.buttons.separator3.hide()
-        self.buttons.main_buttonOUT.show()
-        
-        self.buttons.Title.show()
-        self.buttons.endereco.show()
-        self.buttons.Descricao.show()
-        self.buttons.optionFixo.show()
-        self.buttons.optionFixo.setCheckable(True)
-        self.buttons.optionFlexivel.show()
-        self.buttons.optionFlexivel.setCheckable(True)
-        
-        self.buttons.buttonSetOK.show()
-        
-        
-    
-    def showPerfil(self):
-        self.hideOptions()
-        self.buttons.main_buttonIN.hide()
-        self.buttons.main_buttonOUT.show()
-        self.buttons.separator1.hide()
-        self.buttons.separator3.hide()
-        
-        self.buttons.separator2.show()
-    
-    def showConfig(self):
-        self.hideOptions()
-        self.buttons.main_buttonIN.hide()
-        self.buttons.main_buttonOUT.show()
-        self.buttons.separator1.hide()
-        self.buttons.separator2.hide()
-        
-        self.buttons.separator3.show()
-
-    def hideOptions(self):
-        self.buttons.main_buttonOUT.hide()
-        self.buttons.main_buttonIN.show()
-        self.buttons.separator1.show()
-        self.buttons.separator2.hide()
-        self.buttons.separator3.hide()
-        
-        self.buttons.Title.hide()
-        self.buttons.Title.clear()
-        self.buttons.endereco.hide()
-        self.buttons.endereco.clear()
-        self.buttons.Descricao.hide()
-        self.buttons.Descricao.setDefault()
-        self.buttons.optionFixo.hide()
-        self.buttons.optionFixo.setCheckable(False)
-        self.buttons.optionFlexivel.hide()
-        self.buttons.optionFlexivel.setCheckable(False)
-        
-        self.buttons.repetirLabel.hide()
-        self.buttons.repetir.hide()
-        self.buttons.repetir.setCurrentIndex(0)
-        self.buttons.transporteLabel.hide()
-        self.buttons.transporte.hide()
-        self.buttons.transporte.setCurrentIndex(0)
-        self.buttons.inicioLabel.hide()
-        
-        self.buttons.inicioDate.hide()
-        self.buttons.inicioTime.hide()
-        self.buttons.inicioTime.setDisabled(False)
-        self.buttons.terminoLabel.hide()
-        self.buttons.terminoDate.hide()
-        self.buttons.terminoDate.setDisabled(False)
-        self.buttons.terminoTime.hide()
-        self.buttons.terminoTime.setDisabled(False)
-        self.buttons.allDay.hide()
-        self.buttons.allDay.setCheckable(False)
-        
-        self.buttons.spinDuracaoLabel.hide()
-        self.buttons.spinDuracao.hide()
-        self.buttons.spinDuracao.setTime(QTime(0,0))
-        self.buttons.dataLimiteCheck.hide()
-        self.buttons.dataLimiteCheck.setCheckable(False)
-        self.buttons.dataLimite.hide()
-        self.buttons.dataLimite.setDisabled(True)
-        self.buttons.prioridadeLabel.hide()
-        self.buttons.prioridade.hide()
-        self.buttons.restricaoTimeCheck.hide()
-        self.buttons.restricaoTimeCheck.setCheckable(False)
-        self.buttons.restricaoTimeDasLabel.hide()
-        self.buttons.restricaoTimeDas.hide()
-        self.buttons.restricaoTimeDas.setDisabled(True)
-        self.buttons.restricaoTimeAteLabel.hide()
-        self.buttons.restricaoTimeAte.hide()
-        self.buttons.restricaoTimeAte.setDisabled(True)
-        self.buttons.restricaoDayOfWeekCheck.hide()
-        self.buttons.restricaoDayOfWeekCheck.setCheckable(False)
-        self.buttons.restricaoSeg.hide()
-        self.buttons.restricaoSeg.setDisabled(True)
-        self.buttons.restricaoTer.hide()
-        self.buttons.restricaoTer.setDisabled(True)
-        self.buttons.restricaoQua.hide()
-        self.buttons.restricaoQua.setDisabled(True)
-        self.buttons.restricaoQui.hide()
-        self.buttons.restricaoQui.setDisabled(True)
-        self.buttons.restricaoSex.hide()
-        self.buttons.restricaoSex.setDisabled(True)
-        self.buttons.restricaoSab.hide()
-        self.buttons.restricaoSab.setDisabled(True)
-        self.buttons.restricaoDom.hide()
-        self.buttons.restricaoDom.setDisabled(True)
-        
-        self.buttons.buttonSetOK.hide()
-
-    def checkFixoFlexivel(self):
-        if self.buttons.optionFixo.isChecked():
-            self.buttons.dataLimiteCheck.hide()
-            self.buttons.dataLimiteCheck.setCheckable(False)
-            self.buttons.dataLimite.hide()
-            self.buttons.dataLimite.setDisabled(True)
-            self.buttons.spinDuracaoLabel.hide()
-            self.buttons.spinDuracao.hide()
-            self.buttons.spinDuracao.setTime(QTime(0,0))
-            self.buttons.prioridadeLabel.hide()
-            self.buttons.prioridade.hide()
-            self.buttons.prioridade.setCurrentIndex(0)
-            self.buttons.restricaoTimeCheck.hide()
-            self.buttons.restricaoTimeCheck.setCheckable(False)
-            self.buttons.restricaoTimeDasLabel.hide()
-            self.buttons.restricaoTimeDas.hide()
-            self.buttons.restricaoTimeDas.setDisabled(True)
-            self.buttons.restricaoTimeAteLabel.hide()
-            self.buttons.restricaoTimeAte.hide()
-            self.buttons.restricaoTimeAte.setDisabled(True)
-            self.buttons.restricaoDayOfWeekCheck.hide()
-            self.buttons.restricaoDayOfWeekCheck.setCheckable(False)
-            self.buttons.restricaoSeg.hide()
-            self.buttons.restricaoSeg.setDisabled(True)
-            self.buttons.restricaoTer.hide()
-            self.buttons.restricaoTer.setDisabled(True)
-            self.buttons.restricaoQua.hide()
-            self.buttons.restricaoQua.setDisabled(True)
-            self.buttons.restricaoQui.hide()
-            self.buttons.restricaoQui.setDisabled(True)
-            self.buttons.restricaoSex.hide()
-            self.buttons.restricaoSex.setDisabled(True)
-            self.buttons.restricaoSab.hide()
-            self.buttons.restricaoSab.setDisabled(True)
-            self.buttons.restricaoDom.hide()
-            self.buttons.restricaoDom.setDisabled(True)
-            
-            time = QTime.currentTime()
-            nextTime = time.addSecs(3600)
-            date = QDate.currentDate()
-            
-            self.buttons.repetirLabel.show()
-            self.buttons.repetir.show()
-            self.buttons.transporteLabel.show()
-            self.buttons.transporte.show()
-            self.buttons.inicioLabel.show()
-            self.buttons.inicioDate.show()
-            self.buttons.inicioDate.setDate(date)
-            self.buttons.inicioTime.show()
-            self.buttons.inicioTime.setTime(time)
-            self.buttons.terminoLabel.show()
-            self.buttons.terminoDate.show()
-            if nextTime.hour() == 0:
-                self.buttons.terminoDate.setDate(date.addDays(1))
-            else:
-                self.buttons.terminoDate.setDate(date)
-            self.buttons.terminoTime.show()
-            self.buttons.terminoTime.setTime(nextTime)
-            self.buttons.allDay.show()
-            self.buttons.allDay.setCheckable(True)
-            
-        elif self.buttons.optionFlexivel.isChecked():
-            self.buttons.repetirLabel.hide()
-            self.buttons.repetir.hide()
-            self.buttons.repetir.setCurrentIndex(0)
-            self.buttons.transporteLabel.hide()
-            self.buttons.transporte.hide()
-            self.buttons.transporte.setCurrentIndex(0)
-            self.buttons.inicioLabel.hide()
-            self.buttons.inicioDate.hide()
-            self.buttons.inicioTime.hide()
-            self.buttons.inicioTime.setDisabled(False)
-            self.buttons.terminoLabel.hide()
-            self.buttons.terminoDate.hide()
-            self.buttons.terminoDate.setDisabled(False)
-            self.buttons.terminoTime.hide()
-            self.buttons.terminoTime.setDisabled(False)
-            self.buttons.allDay.hide()
-            self.buttons.allDay.setCheckable(False)
-            
-            date = QDate.currentDate()
-            
-            self.buttons.dataLimiteCheck.show()
-            self.buttons.dataLimiteCheck.setCheckable(True)
-            self.buttons.dataLimite.show()
-            self.buttons.dataLimite.setDate(date.addDays(7))
-            self.buttons.spinDuracaoLabel.show()
-            self.buttons.spinDuracao.show()
-            self.buttons.prioridadeLabel.show()
-            self.buttons.prioridade.show()
-            self.buttons.restricaoTimeCheck.show()
-            self.buttons.restricaoTimeCheck.setCheckable(True)
-            self.buttons.restricaoTimeDasLabel.show()
-            self.buttons.restricaoTimeDas.show()
-            self.buttons.restricaoTimeAteLabel.show()
-            self.buttons.restricaoTimeAte.show()
-            self.buttons.restricaoDayOfWeekCheck.show()
-            self.buttons.restricaoDayOfWeekCheck.setCheckable(True)
-            self.buttons.restricaoSeg.show()
-            self.buttons.restricaoTer.show()
-            self.buttons.restricaoQua.show()
-            self.buttons.restricaoQui.show()
-            self.buttons.restricaoSex.show()
-            self.buttons.restricaoSab.show()
-            self.buttons.restricaoDom.show()
-    
-    def setDataLimite(self):
-        if self.buttons.dataLimiteCheck.isChecked():
-            self.buttons.dataLimite.setDisabled(False)
-        else:
-            self.buttons.dataLimite.setDisabled(True)
-            date = QDate.currentDate()
-            self.buttons.dataLimite.setDate(date.addDays(7))
-    
-    def setRestricaoTime(self):
-        if self.buttons.restricaoTimeCheck.isChecked():
-            self.buttons.restricaoTimeAte.setDisabled(False)
-            self.buttons.restricaoTimeDas.setDisabled(False)
-        else:
-            self.buttons.restricaoTimeAte.setDisabled(True)
-            self.buttons.restricaoTimeAte.setTime(QTime(0,0))
-            self.buttons.restricaoTimeDas.setDisabled(True)
-            self.buttons.restricaoTimeDas.setTime(QTime(0,0))
-    
-    def setRestricaoDayOfWeek(self):
-        if self.buttons.restricaoDayOfWeekCheck.isChecked():
-            self.buttons.restricaoSeg.setDisabled(False)
-            self.buttons.restricaoTer.setDisabled(False)
-            self.buttons.restricaoQua.setDisabled(False)
-            self.buttons.restricaoQui.setDisabled(False)
-            self.buttons.restricaoSex.setDisabled(False)
-            self.buttons.restricaoSab.setDisabled(False)
-            self.buttons.restricaoDom.setDisabled(False)
-        else:
-            self.buttons.restricaoSeg.setDisabled(True)
-            self.buttons.restricaoSeg.setDEFAULT()
-            self.buttons.restricaoTer.setDisabled(True)
-            self.buttons.restricaoTer.setDEFAULT()
-            self.buttons.restricaoQua.setDisabled(True)
-            self.buttons.restricaoQua.setDEFAULT()
-            self.buttons.restricaoQui.setDisabled(True)
-            self.buttons.restricaoQui.setDEFAULT()
-            self.buttons.restricaoSex.setDisabled(True)
-            self.buttons.restricaoSex.setDEFAULT()
-            self.buttons.restricaoSab.setDisabled(True)
-            self.buttons.restricaoSab.setDEFAULT()
-            self.buttons.restricaoDom.setDisabled(True)
-            self.buttons.restricaoDom.setDEFAULT()
-    
-    def setAllDay(self):
-        time = QTime.currentTime()
-        nextTime = time.addSecs(3600)
-        date = QDate.currentDate()
-        
-        if self.buttons.allDay.isChecked():
-            self.buttons.inicioTime.setDisabled(True)
-            self.buttons.inicioTime.setTime(time)
-            self.buttons.terminoDate.setDisabled(True)
-            if nextTime.hour() == 0:
-                self.buttons.terminoDate.setDate(date.addDays(1))
-            else:
-                self.buttons.terminoDate.setDate(date)
-            self.buttons.terminoTime.setDisabled(True)
-            self.buttons.terminoTime.setTime(nextTime)
-        else:
-            self.buttons.inicioTime.setDisabled(False)
-            self.buttons.terminoDate.setDisabled(False)
-            self.buttons.terminoTime.setDisabled(False)
     
     def nextMonth(self):
         self.mes += 1
@@ -1218,16 +849,15 @@ class MainWindow(QWidget):
                         diasDaSemana += [dia]
                 
                 
-                
                 newCompromisso = Compromisso(self.idxHistorico, titulo, descricao, local)
                 newCompromisso.setFlexivel(duracao, prioridade, dataLimite, timeDas, timeAte, diasDaSemana)
-                #yInicio,yTermino,inicioDate,inicioTime,terminoDate,terminoTime,dayOrder = 
-                self.checkEspacoLivre(newCompromisso)
-            
+                yInicio,yTermino,xInicio,inicioDate,inicioTime,terminoDate,terminoTime,retangMesInicio,retangMesTermino,retangSemanaInicio,retangSemanaTermino,dayOrder,repetir,allDay = self.checkEspacoLivre(newCompromisso)
+                newCompromisso.setTempConfig(yInicio, yTermino, xInicio, inicioDate, inicioTime, terminoDate, terminoTime, retangMesInicio, retangMesTermino, retangSemanaInicio, retangSemanaTermino, dayOrder, repetir, allDay)
+                
             newCompromisso.setWin(self)
             newCompromisso.setFunc('self.win.tabs.setCurrentIndex(3)\nself.win.tabs.descricaoCompromissoModel.clear()\nnew = copy(self.listDescricao)\nsuper(QStandardItem, new).__init__()\nnew.setText(self.listDescricao.text())\nself.win.tabs.descricaoCompromissoModel.appendRow(new)\nself.win.tabs.certeza.indice = self.indice')
             self.settedCompromissos[self.idxHistorico] = newCompromisso
-            self.hideOptions()
+            self.buttons.hideOptions()
             self.checkCompromissos()
     
     def removeCompromisso(self):
@@ -1244,6 +874,30 @@ class MainWindow(QWidget):
             self.tabs.certeza.indice = None
             self.tabs.descricaoCompromissoModel.clear()
             self.checkCompromissos()
+    
+    def editarCompromisso(self):
+        if self.tabs.certeza.indice != None:
+            repetir = ['Nunca','Todo Dia','Toda Semana','Todo Mês']
+            transporte = ['A Pé','Bicicleta','Carro','Moto','Metrô','Ônibus']
+            self.buttons.hideOptions()
+            self.buttons.showOptions()
+            if self.settedCompromissos[self.tabs.certeza.indice].tipo == 'FIXO':
+                self.buttons.optionFixo.click()
+                self.buttons.Title.setText(self.settedCompromissos[self.tabs.certeza.indice].titulo)
+                self.buttons.endereco.setText(self.settedCompromissos[self.tabs.certeza.indice].endereco)
+                self.buttons.repetir.setCurrentIndex(repetir.index(self.settedCompromissos[self.tabs.certeza.indice].repetir))
+                self.buttons.transporte.setCurrentIndex(transporte.index(self.settedCompromissos[self.tabs.certeza.indice].transporte))
+                if self.settedCompromissos[self.tabs.certeza.indice].allDay == True:
+                    self.buttons.allDay.click()
+                    self.buttons.inicioDate.setDate(self.settedCompromissos[self.tabs.certeza.indice].inicioDate)
+                else:
+                    self.buttons.inicioDate.setDate(self.settedCompromissos[self.tabs.certeza.indice].inicioDate)
+                    self.buttons.inicioTime.setTime(self.settedCompromissos[self.tabs.certeza.indice].inicioTime)
+                    self.buttons.terminoDate.setDate(self.settedCompromissos[self.tabs.certeza.indice].terminoDate)
+                    self.buttons.terminoTime.setTime(self.settedCompromissos[self.tabs.certeza.indice].terminoTime)
+                self.buttons.Descricao.setFocus()
+                self.buttons.Descricao.setText(self.settedCompromissos[self.tabs.certeza.indice].descricao)
+            self.tabs.certeza.click()
     
     def checkCompromissos(self):
         today = QDate.currentDate()
@@ -1552,7 +1206,7 @@ class MainWindow(QWidget):
         begin = QDate.currentDate()
         blocos = dict()
         lacunas = dict()
-        flexiveis = []
+        alternativas = dict()
         
         if newCompromisso.dataLimite == None:
             while begin != today.addDays(30):
@@ -1563,16 +1217,59 @@ class MainWindow(QWidget):
                     lacunas['{0}/{1}/{2}'.format(begin.day(), begin.month(), begin.year())] = []
                     begin = begin.addDays(1)
         else:
-            if begin.dayOfWeek() in newCompromisso.diasDaSemana:
-                pass
-            else:
-                blocos['{0}/{1}/{2}'.format(begin.day(), begin.month(), begin.year())] = [None]*self.idxHistorico
-                lacunas['{0}/{1}/{2}'.format(begin.day(), begin.month(), begin.year())] = []
-                begin = begin.addDays(1)
+            while begin != newCompromisso.dataLimite:
+                if begin.dayOfWeek() in newCompromisso.diasDaSemana:
+                    begin = begin.addDays(1)
+                else:
+                    blocos['{0}/{1}/{2}'.format(begin.day(), begin.month(), begin.year())] = [None]*self.idxHistorico
+                    lacunas['{0}/{1}/{2}'.format(begin.day(), begin.month(), begin.year())] = []
+                    begin = begin.addDays(1)
                 
         for indice,comp in self.settedCompromissos.items():
-            if comp.tipo == 'FIXO':
-                if newCompromisso.dataLimite == None:
+            if newCompromisso.dataLimite == None:
+                if comp.inicioDate.dayOfWeek() not in newCompromisso.diasDaSemana:
+                    if comp.allDay == True:
+                        pass
+                    elif comp.inicioDate == comp.terminoDate:
+                        if comp.endereco != None and newCompromisso.endereco != None:
+                            if comp.transporte == 'A Pé':
+                                tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'walking')
+                            elif comp.transporte == 'Bicicleta':
+                                tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'bicycle')
+                            elif comp.transporte == 'Moto':
+                                if abs(comp.inicioTime.secsTo(QTime(12,0))) < 3600:
+                                    tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')
+                                else:
+                                    tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')/2
+                            elif comp.transporte in ('Carro','Ônibus'):
+                                if abs(comp.inicioTime.secsTo(QTime(12,0))) < 3600:
+                                    tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')*2
+                                else:
+                                    tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')
+                            elif comp.transporte == 'Metrô':
+                                tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving') + 1200
+                        else:
+                            tempoViagem = 1200
+                        
+                        if (comp.yInicio-(tempoViagem/62.06896551724138)) > 0 or (comp.yTermino+(tempoViagem/62.06896551724138)) < 1441:
+                            blocos['{0}/{1}/{2}'.format(comp.inicioDate.day(), comp.inicioDate.month(), comp.inicioDate.year())][comp.dayOrder] = [(comp.yInicio-(tempoViagem/62.06896551724138)), (comp.yTermino+(tempoViagem/62.06896551724138))]
+                        elif (comp.yInicio-(tempoViagem/62.06896551724138)) < 0:
+                            dayBefore = comp.inicioDate.addDays(-1)
+                            blocos['{0}/{1}/{2}'.format(dayBefore.day(), dayBefore.month(), dayBefore.year())] += [1441-((tempoViagem/62.06896551724138)-comp.yInicio), 1441]
+                            blocos['{0}/{1}/{2}'.format(comp.inicioDate.day(), comp.inicioDate.month(), comp.inicioDate.year())][comp.dayOrder] = [0, (comp.yTermino+(tempoViagem/62.06896551724138))]
+                        elif (comp.yTermino+(tempoViagem/62.06896551724138)) > 1441:
+                            nextDay = comp.inicioDate.addDays(1)
+                            blocos['{0}/{1}/{2}'.format(nextDay.day(), nextDay.month(), nextDay.year())] += [0,comp.yTermino + (tempoViagem/62.06896551724138)-1441]
+                            blocos['{0}/{1}/{2}'.format(comp.inicioDate.day(), comp.inicioDate.month(), comp.inicioDate.year())][comp.dayOrder] = [(comp.yInicio-(tempoViagem/62.06896551724138)),1441]
+                    else:
+                        if comp.endereco != None and newCompromisso.endereco != None:
+                            tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco)
+                        else:
+                            tempoViagem = 1200
+                        blocos['{0}/{1}/{2}'.format(comp.inicioDate.day(), comp.inicioDate.month(), comp.inicioDate.year())][comp.dayOrder] = [comp.yInicio-(tempoViagem/62.06896551724138), 1441]
+                        blocos['{0}/{1}/{2}'.format(comp.terminoDate.day(), comp.terminoDate.month(), comp.terminoDate.year())][comp.dayOrder] = [0, comp.yTermino+(tempoViagem/62.06896551724138)]
+            else:
+                if comp.inicioDate.daysTo(newCompromisso.dataLimite) > 0:
                     if comp.inicioDate.dayOfWeek not in newCompromisso.diasDaSemana:
                         if comp.allDay == True:
                             pass
@@ -1583,12 +1280,12 @@ class MainWindow(QWidget):
                                 elif comp.transporte == 'Bicicleta':
                                     tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'bicycle')
                                 elif comp.transporte == 'Moto':
-                                    if abs(comp.inicioTime.secsTo(QTime(12,0))) < 3600:
+                                    if abs(comp.inicioTime.secsTo(QTime(12,00))) < 3600:
                                         tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')
                                     else:
                                         tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')/2
                                 elif comp.transporte in ('Carro','Ônibus'):
-                                    if abs(comp.inicioTime.secsTo(QTime(12,0))) < 3600:
+                                    if abs(comp.inicioTime.secsTo(QTime(12,00))) < 3600:
                                         tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')*2
                                     else:
                                         tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')
@@ -1614,60 +1311,11 @@ class MainWindow(QWidget):
                                 tempoViagem = 1200
                             blocos['{0}/{1}/{2}'.format(comp.inicioDate.day(), comp.inicioDate.month(), comp.inicioDate.year())][comp.dayOrder] = [comp.yInicio-(tempoViagem/62.06896551724138), 1441]
                             blocos['{0}/{1}/{2}'.format(comp.terminoDate.day(), comp.terminoDate.month(), comp.terminoDate.year())][comp.dayOrder] = [0, comp.yTermino+(tempoViagem/62.06896551724138)]
-                else:
-                    if comp.inicioDate.daysTo(newCompromisso.dataLimite) > 0:
-                        if comp.inicioDate.dayOfWeek not in newCompromisso.diasDaSemana:
-                            if comp.allDay == True:
-                                pass
-                            elif comp.inicioDate == comp.terminoDate:
-                                if comp.endereco != None and newCompromisso.endereco != None:
-                                    if comp.transporte == 'A Pé':
-                                        tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'walking')
-                                    elif comp.transporte == 'Bicicleta':
-                                        tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'bicycle')
-                                    elif comp.transporte == 'Moto':
-                                        if abs(comp.inicioTime.secsTo(QTime(12,00))) < 3600:
-                                            tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')
-                                        else:
-                                            tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')/2
-                                    elif comp.transporte in ('Carro','Ônibus'):
-                                        if abs(comp.inicioTime.secsTo(QTime(12,00))) < 3600:
-                                            tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')*2
-                                        else:
-                                            tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving')
-                                    elif comp.transporte == 'Metrô':
-                                        tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco, 'driving') + 1200
-                                else:
-                                    tempoViagem = 1200
-                                
-                                if (comp.yInicio-(tempoViagem/62.06896551724138)) > 0 or (comp.yTermino+(tempoViagem/62.06896551724138)) < 1441:
-                                    blocos['{0}/{1}/{2}'.format(comp.inicioDate.day(), comp.inicioDate.month(), comp.inicioDate.year())][comp.dayOrder] = [(comp.yInicio-(tempoViagem/62.06896551724138)), (comp.yTermino+(tempoViagem/62.06896551724138))]
-                                elif (comp.yInicio-(tempoViagem/62.06896551724138)) < 0:
-                                    dayBefore = comp.inicioDate.addDays(-1)
-                                    blocos['{0}/{1}/{2}'.format(dayBefore.day(), dayBefore.month(), dayBefore.year())] += [1441-((tempoViagem/62.06896551724138)-comp.yInicio), 1441]
-                                    blocos['{0}/{1}/{2}'.format(comp.inicioDate.day(), comp.inicioDate.month(), comp.inicioDate.year())][comp.dayOrder] = [0, (comp.yTermino+(tempoViagem/62.06896551724138))]
-                                elif (comp.yTermino+(tempoViagem/62.06896551724138)) > 1441:
-                                    nextDay = comp.inicioDate.addDays(1)
-                                    blocos['{0}/{1}/{2}'.format(nextDay.day(), nextDay.month(), nextDay.year())] += [0,comp.yTermino + (tempoViagem/62.06896551724138)-1441]
-                                    blocos['{0}/{1}/{2}'.format(comp.inicioDate.day(), comp.inicioDate.month(), comp.inicioDate.year())][comp.dayOrder] = [(comp.yInicio-(tempoViagem/62.06896551724138)),1441]
-                            else:
-                                if comp.endereco != None and newCompromisso.endereco != None:
-                                    tempoViagem = self.calculaTempoViagem(comp.endereco, newCompromisso.endereco)
-                                else:
-                                    tempoViagem = 1200
-                                blocos['{0}/{1}/{2}'.format(comp.inicioDate.day(), comp.inicioDate.month(), comp.inicioDate.year())][comp.dayOrder] = [comp.yInicio-(tempoViagem/62.06896551724138), 1441]
-                                blocos['{0}/{1}/{2}'.format(comp.terminoDate.day(), comp.terminoDate.month(), comp.terminoDate.year())][comp.dayOrder] = [0, comp.yTermino+(tempoViagem/62.06896551724138)]
-            
-            else:
-                flexiveis.append(comp)
         
-        print(blocos)
-        print()
         for data,lista in blocos.items():
-            print(data,lista)
             yInicio = 0
             yTermino = 0
-            for indice2,coords in enumerate(lista):
+            for coords in lista:
                 if coords == None:
                     yTermino = 1441
                     lacunas[data] += [[yInicio, yTermino]]
@@ -1683,25 +1331,112 @@ class MainWindow(QWidget):
                         yTermino = coords[0]
                         lacunas[data] += [[yInicio,yTermino]]
                         break
-        print(lacunas)
         
+        for data3,lista3 in lacunas.items():
+            alternativas[data3] = []
+            for lacuna in lista3:
+                if (lacuna[1]-lacuna[0]) > newCompromisso.duracao:
+                    alternativas[data3] += [lacuna]
+        
+        data4 = choice(list(alternativas.keys()))
+        lista4 = alternativas[data4]
+        lacuna4 = choice(lista4)
+        
+        yInicio = ((lacuna[1]-lacuna4[0])/2)-(newCompromisso.duracao/2)
+        yTermino = yInicio + newCompromisso.duracao
+        
+        inicioTimeS = (yInicio * 62.06896551724138)
+        inicioTimeH = (inicioTimeS-(inicioTimeS%3600))/3600
+        inicioTimeM = ((inicioTimeS%3600)-((inicioTimeS%3600)%60))/60
+        inicioTime = QTime(inicioTimeH, inicioTimeM)
+        
+        terminoTimeS = (yTermino * 62.06896551724138)
+        terminoTimeH = (terminoTimeS-(terminoTimeS%3600))/3600
+        terminoTimeM = ((terminoTimeS%3600)-((terminoTimeS%3600)%60))/60
+        terminoTime = QTime(terminoTimeH, terminoTimeM)
+        
+        data4 = data4.split('/')
+        inicioDate = QDate(int(data4[2]), int(data4[1]), int(data4[0]))
+        terminoDate = inicioDate
+        
+        allDay = False
+        repetir = 'Nunca'
+        
+        if inicioDate.dayOfWeek() <= 6:
+            retangSemanaInicio = inicioDate.dayOfWeek()+1
+        else:
+            retangSemanaInicio = 1
+            
+        first = inicioDate.addDays( -(inicioDate.day()-1) )
+        if first.dayOfWeek() <= 6:
+            beginInicio = first.addDays( -first.dayOfWeek() )
+        else:
+            beginInicio = first.addDays(-7)
+            
+        retangMesInicio = 0
+        while beginInicio != inicioDate.addDays(1):
+            retangMesInicio += 1
+            beginInicio = beginInicio.addDays(1)
+            
+        if allDay == False:
+            last = terminoDate.addDays( -(terminoDate.day()-1) )
+            if last.dayOfWeek() <= 6:
+                retangSemanaTermino = terminoDate.dayOfWeek()+1
+                beginTermino = last.addDays( -last.dayOfWeek() )
+            else:
+                retangSemanaTermino = 1
+                beginTermino = last.addDays(-7)
+            retangMesTermino = 0
+            while beginTermino != terminoDate.addDays(1):
+                retangMesTermino += 1
+                beginTermino = beginTermino.addDays(1)
+        
+        dayOrder = 0
+        xInicio = 0
+        if self.settedCompromissos == {}:
+            pass
+        else:
+            for idx,compromisso in self.settedCompromissos.items():
+                if allDay == True:
+                    if compromisso.inicioDate == inicioDate and compromisso.inicioDate == compromisso.terminoDate:
+                        compromisso.dayOrder += 1
+                    elif compromisso.terminoDate == inicioDate and compromisso.inicioDate != compromisso.terminoDate:
+                        dayOrder += 1
+                elif compromisso.allDay == True:
+                    dayOrder += 1
+                elif compromisso.inicioDate == inicioDate and compromisso.inicioDate == compromisso.terminoDate:
+                    if inicioTime.secsTo(compromisso.inicioTime) < 0:
+                        dayOrder += 1
+                    else:
+                        compromisso.dayOrder += 1
+                    
+                    if (compromisso.inicioTime < inicioTime < compromisso.terminoTime) or (compromisso.inicioTime < terminoTime < compromisso.terminoTime):
+                        if xInicio <= compromisso.xInicio:
+                            xInicio = compromisso.xInicio + 70
+                
+                elif compromisso.inicioDate == inicioDate and compromisso.inicioDate != compromisso.terminoDate:
+                    compromisso.dayOrder += 1
+                
+                elif compromisso.terminoDate == inicioDate and compromisso.inicioDate != compromisso.terminoDate:
+                    dayOrder += 1
+        return yInicio, yTermino, xInicio, inicioDate, inicioTime, terminoDate, terminoTime, retangMesInicio, retangMesTermino, retangSemanaInicio, retangSemanaTermino, dayOrder, repetir, allDay
     
     def calculaTempoViagem(self, origem, destino, transporte):
         try:
-            orig_lat,orig_lng = get_coordinates(origem)
-            dest_lat,dest_lng = get_coordinates(destino)
+            orig_lat,orig_lng = self.get_coordinates(origem)
+            dest_lat,dest_lng = self.get_coordinates(destino)
             
             url = "http://maps.googleapis.com/maps/api/distancematrix/json?origins={0},{1}&destinations={2},{3}&mode={4}&language=en-EN&sensor=false".format(orig_lat,orig_lng,dest_lat,dest_lng,transporte)
             result= simplejson.load(urllib.request.urlopen(url))
             for key,value in result.items():
-                print(key, value)
-                print()
+                if value == ['10060 None TO, Italy']:
+                    return 1200
             driving_time = result['rows'][0]['elements'][0]['duration']['value']
             return driving_time
         except urllib.error.URLError:
             return 1200
     
-    def get_coordinates(query, from_sensor=False):
+    def get_coordinates(self,query, from_sensor=False):
         query = query.encode('utf-8')
         params = {
             'address': query,
@@ -1715,7 +1450,6 @@ class MainWindow(QWidget):
             latitude, longitude = location['lat'], location['lng']
         else:
             latitude, longitude = None, None
-            print(query, "<no results>")
         return latitude, longitude
 
 if __name__ == '__main__':
@@ -1725,5 +1459,7 @@ if __name__ == '__main__':
         getattr(win.tabs.calendario_Mes, 'label{0}'.format(i)).setWin(win)
     for j in range(1,8):
         getattr(win.tabs.semana, 'list{0}'.format(j)).setWin(win)
+    win.buttons.win = win
+    win.buttons.setWin()
     win.show()
     app.exec_()

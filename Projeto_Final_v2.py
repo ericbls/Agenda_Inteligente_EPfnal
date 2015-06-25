@@ -41,6 +41,8 @@ class MainWindow(QMainWindow):
         
         self.resize(720,540)
         self.centerOnScreen()
+        
+        self.connect(QShortcut(QKeySequence(Qt.Key_Escape),self),SIGNAL('activated()'),self.deleteLater)
     
     def centerOnScreen(self):
         resolution = QDesktopWidget().screenGeometry()
